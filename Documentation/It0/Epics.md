@@ -57,7 +57,8 @@
 
 
 ## EPIC 7 - Reports & Metrics
-### Goal - 
+### Goal - Provide real-time operational insights and historical business analytics to drive decision-making.
+### Includes:
 
 
 ## Epic 8 - Support & feedback
