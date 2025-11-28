@@ -19,9 +19,9 @@
     As a user, I want to be able to create an account so my information can be properly saved and managed across devices.
 #### • User Story 2.2 - Manage profile as a User
     As a user, I want to be able to edit my profile information (such as name, profile picture, location, and bio), so I can keep my account up to date.
-#### • User Story 2.3 -  Recover an account as a User
+#### • User Story 2.3 - Recover an account as a User
     As a user, I want to be able to recover access to my account using my email or phone number, so I can regain control if I forget my password.
-#### • User Story 2.4 -  View purchase history as a User
+#### • User Story 2.4 - View purchase history as a User
     As a user, I want to be able to view my rental and payment history, so I can keep track of my past transactions and expenses.
 
 ## EPIC 3 — Game Search & Rental Requests (Renter-Side)
@@ -35,12 +35,13 @@
     As a user, I want to be able to submit a rental request for a game, choosing dates and confirming the rental conditions, so I can start the rental process.
 #### • User Story 3.4 - View status of requests
     As a user, I want to be able to view the status of all my rental requests (pending, accepted, rejected, cancelled), so I can keep track of my rentals.
-#### • User Story 3.5 View reservation calendar
+#### • User Story 3.5 - View reservation calendar
     As a user, I want be able to see a calendar showing when a game is available or already booked, so I can choose dates that fit both my and the owner's schedules.
-#### • User Story 3.6 - Payment preview before checkout
-    As a user, I want to be able to preview the costs of the rental and its special conditions (if any) before confirming, so I know exactly how much I will have to pay.
-#### • User Story 3.7 - Cancel a request before confirmation
+#### • User Story 3.6 - Cancel a request before confirmation
     As a user, I want to be able to cancel a pending rental request, so I’m not  forced to commit to a rental I no longer want.
+#### • User Story 3.7 - Payment preview before checkout
+    As a user, I want to be able to preview the costs of the rental and its special conditions (if any) before confirming, so I know exactly how much I will have to pay.
+
 
 ## EPIC 4 — Rental Management System (Core Platform Logic)
 ### Goal: Handle the lifecycle of a rental.
@@ -59,7 +60,7 @@
 ### Includes:
 #### • User Story 5.1 - Manage all users
     As an admin, I want to be able to search, review, warn, or ban users so the platform remains safe.
-#### • User Story 5.2 - View platform metrics:
+#### • User Story 5.2 - View platform metrics
     As an admin, I want to be able to see statistics (such as active rentals, revenue and popular games), so I can understand the performance of the platform and its target audience.
 
 ## EPIC 6 - Moderation
@@ -76,7 +77,7 @@
 #### • User Story 6.5 - Manage flagged content
     As an admin, I want to be able to see and take action on flagged listings, reviews, or messages, so I can remove harmful or inappropriate material.
 
-## Epic 7 - Support & feedback
+## Epic 7 - Support & Feedback
 ### Goal - Display user feedback and provide support tools
 ### Includes:
 #### • User Story 7.1 - Damage report system

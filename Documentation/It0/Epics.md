@@ -23,8 +23,8 @@
 #### • Submit rental request
 #### • View status of requests
 #### • View reservation calendar
-#### • Payment preview before checkout
 #### • Cancel a request before confirmation
+#### • Payment preview before checkout
 
 ## EPIC 4 — Rental Management System (Core Platform Logic)
 ### Goal: Handle the lifecycle of a rental.
@@ -38,7 +38,7 @@
 ### Goal: Keep the platform safe, trustworthy, and compliant through account and partnership oversight.
 ### Includes:
 #### • Manage all users
-#### • View platform metrics:
+#### • View platform metrics
 
 ## EPIC 6 - Moderation
 ### Goal: Allow the admin the use of automated systems to ensure safe and legal usage of the app.
@@ -49,7 +49,7 @@
 #### • Approve or investigate listings
 #### • Manage flagged content
 
-## Epic 7 - Support & feedback
+## Epic 7 - Support & Feedback
 ### Goal - Display user feedback and provide support tools
 ### Includes:
 #### • Damage report system
