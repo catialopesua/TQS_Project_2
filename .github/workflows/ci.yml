@@ -38,10 +38,17 @@ jobs:
           name: jacoco-report
           path: ${{ env.PROJECT_DIR }}/target/site/jacoco/
 
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: SonarQube Scan
         if: env.SONAR_TOKEN != ''
         working-directory: ${{ env.PROJECT_DIR }}
-        run: mvn sonar:sonar -Dsonar.projectKey=my_project_key
+        run: mvn sonar:sonar -Dsonar.projectKey=DCANascimento_TQS_Project_2
 
       - name: Authenticate with Xray
         id: xray-auth
