@@ -17,11 +17,13 @@
 ### Includes:
 #### • User Story 2.1 - Create an account as a User
     As a user, I want to be able to create an account so my information can be properly saved and managed across devices.
-#### • User Story 2.2 - Manage profile as a User
+#### • User Story 2.2 - Login
+    As a user, I want to be able to log into the platform using the information associated with my account.
+#### • User Story 2.3 - Manage profile as a User
     As a user, I want to be able to edit my profile information (such as name, profile picture, location, and bio), so I can keep my account up to date.
-#### • User Story 2.3 - Recover an account as a User
+#### • User Story 2.4 - Recover an account as a User
     As a user, I want to be able to recover access to my account using my email or phone number, so I can regain control if I forget my password.
-#### • User Story 2.4 - View purchase history as a User
+#### • User Story 2.5 - View purchase history as a User
     As a user, I want to be able to view my rental and payment history, so I can keep track of my past transactions and expenses.
 
 ## EPIC 3 — Game Search & Rental Requests (Renter-Side)
@@ -72,8 +74,8 @@
     As a user, I want the platform to send me automated reminders (pickup, return, overdue), so I can stay informed throughout the rental process.
 #### • User Story 6.3 - Late return notifications
     As a user, I want to be notified when a renter is late on returning my item, so I can take appropriate action.
-#### • User Story 6.4 - Approve or investigate listings
-    As an admin, I want to be able to review listings before they go public, so I can ensure they follow platform rules.
+#### • User Story 6.4 - Investigate listings
+    As an admin, I want to be able to review listings after they go public, so I can ensure they follow platform rules.
 #### • User Story 6.5 - Manage flagged content
     As an admin, I want to be able to see and take action on flagged listings, reviews, or messages, so I can remove harmful or inappropriate material.
 

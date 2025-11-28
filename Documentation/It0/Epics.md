@@ -46,7 +46,7 @@
 #### • Fraud and abuse detection
 #### • Rental completion and auto reminders
 #### • Late return notifications
-#### • Approve or investigate listings
+#### • Investigate listings
 #### • Manage flagged content
 
 ## Epic 7 - Support & Feedback
