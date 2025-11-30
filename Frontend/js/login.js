@@ -35,7 +35,7 @@ class AuthInterface {
     init() {
         this.bindEvents();
         this.setupInitialState();
-        this.initFunBackground();
+        BitSwapUtils.initParticles();
     } bindEvents() {
         // Tab switching
         this.elements.loginTab?.addEventListener('click', () => this.switchTab('login'));
@@ -394,54 +394,9 @@ class AuthInterface {
             this.hideSuccess();
         }
     }
+}
 
-    // Fun background effects
-    initFunBackground() {
-        // Check if user prefers reduced motion
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return;
-        }
-
-        this.createParticles();
-    }
-
-    createParticles() {
-        const particlesContainer = document.querySelector('.particles');
-        if (!particlesContainer) return;
-
-        // Create 25 floating particles
-        for (let i = 0; i < 25; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-
-            // Random starting position
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 8 + 's';
-            particle.style.animationDuration = (8 + Math.random() * 7) + 's';
-
-            particlesContainer.appendChild(particle);
-        }
-
-        // Add more particles periodically
-        setInterval(() => {
-            if (particlesContainer.children.length < 30) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = '0s';
-                particle.style.animationDuration = (8 + Math.random() * 7) + 's';
-                particlesContainer.appendChild(particle);
-
-                // Remove particle after animation
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 15000);
-            }
-        }, 2000);
-    }
-}// Initialize when DOM is ready
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new AuthInterface();
 });

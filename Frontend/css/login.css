@@ -1,95 +1,6 @@
-/* GameRent+ - Gaming-themed Auth Page Styles */
+/* BitSwap - Auth Page Styles */
 
-/* ===== CSS VARIABLES (THEME) ===== */
-:root {
-    /* Color palette */
-    --bg: #0b0f1a;
-    --bg-secondary: #0f1724;
-    --panel: #1a2332;
-    --panel-light: #243145;
-    --accent: #4ae0ff;
-    --accent-secondary: #ff4d6d;
-    --accent-tertiary: #57ff8a;
-    --muted: #9aa3b2;
-    --text-primary: #ffffff;
-    --text-secondary: #b8c4d1;
-    --text-muted: #6b7684;
-    --border: #2a3441;
-    --border-focus: var(--accent);
-    --error: #ff6b6b;
-    --success: #51cf66;
-    --warning: #ffd93d;
-
-    /* Typography */
-    --font-primary: 'Orbitron', 'Courier New', monospace;
-    --font-secondary: 'Exo 2', 'Arial', sans-serif;
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
-    --font-size-xl: 1.25rem;
-    --font-size-2xl: 1.5rem;
-    --font-size-3xl: 2rem;
-
-    /* Spacing */
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-
-    /* Border radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-
-    /* Shadows & glows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --glow-accent: 0 0 20px rgba(74, 224, 255, 0.3);
-    --glow-error: 0 0 20px rgba(255, 107, 107, 0.3);
-    --glow-success: 0 0 20px rgba(81, 207, 102, 0.3);
-
-    /* Transitions */
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.3s ease;
-    --transition-slow: 0.5s ease;
-}
-
-/* ===== RESET & BASE STYLES ===== */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-/* Custom scrollbar styling */
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-secondary) 100%);
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
-    box-shadow: 0 0 10px rgba(74, 224, 255, 0.5);
-}
-
-::-webkit-scrollbar-corner {
-    background: var(--bg-secondary);
-}
+/* ===== MAIN LAYOUT ===== */
 
 html {
     height: 100%;
@@ -159,56 +70,6 @@ body::before {
     }
 }
 
-/* ===== PARTICLES (BACKGROUND ONLY) ===== */
-.particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.particle {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: float 8s linear infinite;
-    opacity: 0.4;
-}
-
-.particle:nth-child(2n) {
-    background: var(--accent-secondary);
-    animation-duration: 12s;
-    width: 2px;
-    height: 2px;
-}
-
-.particle:nth-child(3n) {
-    background: var(--accent-tertiary);
-    animation-duration: 15s;
-    width: 4px;
-    height: 4px;
-}
-
-.particle:nth-child(4n) {
-    background: linear-gradient(45deg, var(--accent), var(--accent-secondary));
-    animation-duration: 10s;
-    border-radius: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    :root {
-        --border: #ffffff;
-        --text-muted: #ffffff;
-        --muted: #ffffff;
-    }
-}
-
 /* ===== MAIN LAYOUT ===== */
 .auth-container {
     display: flex;
@@ -263,18 +124,7 @@ body::before {
     filter: drop-shadow(var(--glow-accent));
 }
 
-.logo-fallback {
-    display: inline-block;
-}
-
-.logo-text {
-    font-family: var(--font-primary);
-    font-size: var(--font-size-2xl);
-    font-weight: 900;
-    color: var(--accent);
-    text-shadow: 0 0 10px rgba(74, 224, 255, 0.5);
-}
-
+/* Auth page specific logo styling */
 .auth-title {
     font-family: var(--font-primary);
     font-size: var(--font-size-xl);

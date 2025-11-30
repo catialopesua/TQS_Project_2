@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BitSwap - Gaming Marketplace. Browse and rent your favorite games.">
+    <title>Browse Games - BitSwap</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/listings.css">
+</head>
+
+<body>
+    <!-- Background overlay -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Fun background elements -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo section -->
+            <div class="logo-section">
+                <img src="assets/applogo.png" alt="BitSwap Logo" class="header-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback small" style="display: none;">
+                    <span class="logo-text">BitSwap</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="main-nav" role="navigation">
+                <ul class="nav-list">
+                    <li><a href="listings.html" class="nav-link active">Listings</a></li>
+                    <li><a href="#" class="nav-link">Renter Dashboard</a></li>
+                    <li><a href="#" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- User actions -->
+            <div class="header-actions">
+                <button class="header-btn secondary" id="sign-out-btn">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <!-- Filter controls -->
+        <section class="filter-section">
+            <div class="filter-container">
+                <h1 class="page-title">Browse Games</h1>
+
+                <div class="filter-controls">
+                    <!-- Search bar -->
+                    <div class="search-wrapper">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search games..."
+                            aria-label="Search games">
+                        <div class="search-icon"></div>
+                    </div>
+
+                    <!-- Category filter -->
+                    <div class="filter-group">
+                        <select id="category-filter" class="filter-select" aria-label="Filter by category">
+                            <option value="">All Categories</option>
+                            <option value="action">Action</option>
+                            <option value="adventure">Adventure</option>
+                            <option value="rpg">RPG</option>
+                            <option value="sports">Sports</option>
+                            <option value="puzzle">Puzzle</option>
+                            <option value="shooter">Shooter</option>
+                            <option value="horror">Horror</option>
+                            <option value="platformer">Platformer</option>
+                        </select>
+                    </div>
+
+                    <!-- Platform filter -->
+                    <div class="filter-group">
+                        <select id="platform-filter" class="filter-select" aria-label="Filter by platform">
+                            <option value="">All Platforms</option>
+                            <option value="playstation">PlayStation</option>
+                            <option value="xbox">Xbox</option>
+                            <option value="nintendo">Nintendo Switch</option>
+                            <option value="pc">PC</option>
+                            <option value="retro">Retro (N64/PS1)</option>
+                        </select>
+                    </div>
+
+                    <!-- Price range filter -->
+                    <div class="filter-group price-range-group">
+                        <div class="price-range-header">
+                            <span class="filter-label">Price Range</span>
+                            <span class="price-display">$<span id="min-price-display">0</span> - $<span
+                                    id="max-price-display">15</span>/day</span>
+                        </div>
+                        <div class="price-slider-container">
+                            <div class="slider-track"></div>
+                            <div class="slider-range" id="slider-range"></div>
+                            <div class="slider-handle" id="min-handle" data-value="0"></div>
+                            <div class="slider-handle" id="max-handle" data-value="15"></div>
+                        </div>
+                    </div>
+
+                    <!-- Owner rating filter -->
+                    <div class="filter-group">
+                        <select id="rating-filter" class="filter-select" aria-label="Filter by owner rating">
+                            <option value="">All Ratings</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="2">2+ Stars</option>
+                            <option value="1">1+ Star</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort dropdown -->
+                    <div class="filter-group">
+                        <select id="sort-filter" class="filter-select" aria-label="Sort listings">
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="alphabetical">Alphabetical</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Owner Rating</option>
+                            <option value="platform">Platform</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Listings grid -->
+        <section class="listings-section">
+            <div class="listings-container">
+                <div id="listings-grid" class="listings-grid">
+                    <!-- Game listings will be populated by JavaScript -->
+                </div>
+
+                <div id="no-results" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🎮</div>
+                    <h3>No games found</h3>
+                    <p>Try adjusting your filters or search terms</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/shared.js"></script>
+    <script src="js/listings.js"></script>
+</body>
+
+</html>
