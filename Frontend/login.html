@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitSwap | Login</title>
+
+    <!-- Gaming fonts from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Favicon (optional, falls back gracefully) -->
+    <link rel="icon" type="image/png" href="assets/applogo.png">
+</head>
+
+<body>
+    <!-- Background overlay for readability -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Fun background elements -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Main container -->
+    <main class="auth-container" role="main">
+        <!-- Auth card/panel -->
+        <div class="auth-card">
+            <!-- Logo header -->
+            <header class="auth-header">
+                <div class="logo-container">
+                    <img src="assets/applogo.png" alt="BitSwap Logo" class="logo"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="logo-fallback" style="display: none;">
+                        <span class="logo-text">BitSwap</span>
+                    </div>
+                </div>
+                <h1 class="auth-title">Welcome to BitSwap</h1>
+                <p class="auth-subtitle">The ultimate gaming marketplace</p>
+            </header>
+
+            <!-- Tab navigation -->
+            <nav class="tab-nav" role="tablist" aria-label="Authentication options">
+                <button class="tab-button active" role="tab" aria-selected="true" aria-controls="login-panel"
+                    id="login-tab" data-tab="login">
+                    <span>Login</span>
+                </button>
+                <button class="tab-button" role="tab" aria-selected="false" aria-controls="register-panel"
+                    id="register-tab" data-tab="register">
+                    <span>Create Account</span>
+                </button>
+                <div class="tab-indicator" aria-hidden="true"></div>
+            </nav>
+
+            <!-- Form panels -->
+            <div class="form-container">
+                <!-- Login Form -->
+                <div id="login-panel" class="form-panel active" role="tabpanel" aria-labelledby="login-tab">
+                    <form id="login-form" class="auth-form" novalidate>
+                        <div class="field-group">
+                            <label for="login-username" class="field-label">Username</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="login-username" name="username" class="form-input" required
+                                    autocomplete="username" aria-describedby="login-username-error">
+                            </div>
+                            <div id="login-username-error" class="error-message" aria-live="polite"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="login-password" class="field-label">Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="login-password" name="password" class="form-input" required
+                                    autocomplete="current-password" aria-describedby="login-password-error">
+                                <button type="button" class="password-toggle" aria-label="Show password"
+                                    data-target="login-password">
+                                    <span class="toggle-icon eye-icon"></span>
+                                </button>
+                            </div>
+                            <div id="login-password-error" class="error-message" aria-live="polite"></div>
+                        </div>
+
+                        <button type="submit" class="submit-button primary">
+                            <span class="button-text">Login</span>
+                            <div class="button-loader" aria-hidden="true"></div>
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-panel" class="form-panel" role="tabpanel" aria-labelledby="register-tab">
+                    <form id="register-form" class="auth-form" novalidate>
+                        <div class="field-group">
+                            <label for="register-username" class="field-label">Username</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="register-username" name="username" class="form-input" required
+                                    autocomplete="username"
+                                    aria-describedby="register-username-error register-username-help">
+                            </div>
+                            <div id="register-username-help" class="field-help">Choose a unique username (3-20
+                                characters)</div>
+                            <div id="register-username-error" class="error-message" aria-live="polite"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="register-password" class="field-label">Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="register-password" name="password" class="form-input"
+                                    required autocomplete="new-password"
+                                    aria-describedby="register-password-error register-password-strength">
+                                <button type="button" class="password-toggle" aria-label="Show password"
+                                    data-target="register-password">
+                                    <span class="toggle-icon eye-icon"></span>
+                                </button>
+                            </div>
+                            <div id="register-password-error" class="error-message" aria-live="polite"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <fieldset class="role-group">
+                                <legend class="field-label">I want to be a:</legend>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="role" value="renter" class="radio-input" required
+                                            checked>
+                                        <span class="radio-custom"></span>
+                                        <span class="radio-text">
+                                            <strong>Renter</strong>
+                                            <small>Browse and rent games</small>
+                                        </span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="role" value="owner" class="radio-input" required>
+                                        <span class="radio-custom"></span>
+                                        <span class="radio-text">
+                                            <strong>Owner</strong>
+                                            <small>List and rent out games</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </fieldset>
+                            <div class="error-message" aria-live="polite"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="register-bio" class="field-label">
+                                Description / Biography
+                                <span class="optional">(optional)</span>
+                            </label>
+                            <div class="textarea-wrapper">
+                                <textarea id="register-bio" name="bio" class="form-textarea" maxlength="500"
+                                    placeholder="Tell us a bit about yourself and your gaming interests..."
+                                    aria-describedby="bio-count"></textarea>
+                                <div id="bio-count" class="char-count">
+                                    <span class="count-current">0</span>/<span class="count-max">500</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-button primary">
+                            <span class="button-text">Create Account</span>
+                            <div class="button-loader" aria-hidden="true"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Success message overlay -->
+            <div id="success-overlay" class="success-overlay" aria-hidden="true" role="alert">
+                <div class="success-content">
+                    <div class="success-logo">
+                        <img src="assets/applogo.png" alt="BitSwap Logo" class="success-logo-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="success-logo-fallback" style="display: none;">
+                            <span class="success-logo-text">BitSwap</span>
+                        </div>
+                    </div>
+                    <h2 class="success-title"></h2>
+                    <p class="success-message"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Particle effects container -->
+        <div class="particles" aria-hidden="true">
+            <!-- Particles will be generated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
