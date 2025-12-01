@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BitSwap - Manage Booking Requests for Your Game Listings">
+    <title>Booking Requests - BitSwap</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/bookingrequests.css">
+</head>
+
+<body>
+    <!-- Background overlay -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Fun background elements -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo section -->
+            <div class="logo-section">
+                <img src="assets/applogo.png" alt="BitSwap Logo" class="header-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback small" style="display: none;">
+                    <span class="logo-text">BitSwap</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="main-nav" role="navigation">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link">Analytics</a></li>
+                    <li><a href="bookingrequests.html" class="nav-link active">Booking Requests</a></li>
+                    <li><a href="addvideogame.html" class="nav-link">Add New Item</a></li>
+                    <li><a href="#" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- User actions -->
+            <div class="header-actions">
+                <button class="header-btn secondary" id="sign-out-btn">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <!-- Page header -->
+        <section class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Booking Requests</h1>
+                <p class="page-subtitle">Manage incoming rental requests for your game listings</p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalRequests">0</span>
+                        <span class="stat-label">Total Requests</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="pendingRequests">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="approvedRequests">0</span>
+                        <span class="stat-label">Approved</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter and controls -->
+        <section class="filter-section">
+            <div class="filter-container">
+                <div class="filter-controls">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchRequests" class="search-input"
+                            placeholder="Search by game title or renter..." aria-label="Search booking requests">
+                        <div class="search-icon">🔍</div>
+                    </div>
+                    <div class="filter-group">
+                        <select id="statusFilter" class="filter-select" aria-label="Filter by status">
+                            <option value="all">All Requests</option>
+                            <option value="pending" selected>Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking requests grid -->
+        <section class="requests-section">
+            <div class="requests-container">
+                <div class="requests-grid" id="requestsGrid">
+                    <!-- Booking request cards will be dynamically inserted here -->
+                </div>
+
+                <!-- Empty state -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📦</div>
+                    <h3 class="empty-title">No Booking Requests</h3>
+                    <p class="empty-description">You don't have any booking requests at the moment. When renters request
+                        to book your games, they'll appear here.</p>
+                    <a href="addvideogame.html" class="btn btn-primary">Add New Game</a>
+                </div>
+
+                <!-- Loading state -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading booking requests...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-icon" id="modal-icon"></div>
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure you want to perform this action?</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                <button class="btn btn-primary" id="modal-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script src="js/shared.js"></script>
+    <script src="js/bookingrequests.js"></script>
+</body>
+
+</html>

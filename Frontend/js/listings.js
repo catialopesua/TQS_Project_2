@@ -34,7 +34,7 @@ class GameListings {
         this.createSampleGames();
         this.initPriceSlider();
         this.bindEvents();
-        BitSwapUtils.initParticles();
+        BitSwapUtils.init();
         this.renderGames();
     }
 

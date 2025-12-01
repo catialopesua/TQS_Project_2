@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BitSwap - Add New Videogame Listing to the Gaming Marketplace">
+    <title>Add New Listing - BitSwap</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/addvideogame.css">
+</head>
+
+<body>
+    <!-- Background overlay -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Fun background elements -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo section -->
+            <div class="logo-section">
+                <img src="assets/applogo.png" alt="BitSwap Logo" class="header-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback small" style="display: none;">
+                    <span class="logo-text">BitSwap</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="main-nav" role="navigation">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link">Analytics</a></li>
+                    <li><a href="bookingrequests.html" class="nav-link">Booking Requests</a></li>
+                    <li><a href="addvideogame.html" class="nav-link active">Add New Item</a></li>
+                    <li><a href="#" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- User actions -->
+            <div class="header-actions">
+                <button class="header-btn secondary" id="sign-out-btn">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <div class="form-container">
+            <!-- Page title -->
+            <div class="page-header">
+                <h1 class="page-title">Add New Videogame</h1>
+                <p class="page-subtitle">Create a new listing for the BitSwap marketplace</p>
+            </div>
+
+            <!-- Form card -->
+            <div class="form-card">
+                <form id="add-game-form" class="game-form" novalidate>
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h2 class="section-title">Basic Information</h2>
+
+                        <div class="field-group">
+                            <label for="game-title" class="field-label">Game Title *</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="game-title" name="title" class="form-input"
+                                    placeholder="Enter the videogame title" required>
+                            </div>
+                            <div class="error-message" id="title-error"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="game-description" class="field-label">Description *</label>
+                            <div class="input-wrapper">
+                                <textarea id="game-description" name="description" class="form-textarea"
+                                    placeholder="Describe the game, its condition, and any special notes..." rows="4"
+                                    required></textarea>
+                                <div class="char-count">
+                                    <span id="description-count">0</span> / 500
+                                </div>
+                            </div>
+                            <div class="error-message" id="description-error"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="game-condition" class="field-label">Condition *</label>
+                            <div class="input-wrapper">
+                                <select id="game-condition" name="condition" class="form-select" required>
+                                    <option value="">Select condition</option>
+                                    <option value="new">New</option>
+                                    <option value="like-new">Like New</option>
+                                    <option value="good">Good</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="condition-error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Photos -->
+                    <div class="form-section">
+                        <h2 class="section-title">Photos</h2>
+
+                        <div class="field-group">
+                            <label for="game-photos" class="field-label">Upload Photos</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="game-photos" name="photos" class="file-input" multiple
+                                    accept="image/*">
+                                <label for="game-photos" class="file-upload-label">
+                                    <div class="upload-icon">📷</div>
+                                    <div class="upload-text">
+                                        <span class="upload-main">Click to upload photos</span>
+                                        <span class="upload-sub">or drag and drop images here</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="photo-preview" id="photo-preview"></div>
+                            <div class="error-message" id="photos-error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="form-section">
+                        <h2 class="section-title">Pricing</h2>
+
+                        <div class="field-group">
+                            <label for="rental-price" class="field-label">Rental Price per Day (€) *</label>
+                            <div class="input-wrapper price-wrapper">
+                                <span class="currency-symbol">€</span>
+                                <input type="number" id="rental-price" name="price" class="form-input price-input"
+                                    placeholder="0.00" min="0" step="0.01" required>
+                                <span class="price-suffix">/day</span>
+                            </div>
+                            <div class="error-message" id="price-error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="form-section">
+                        <h2 class="section-title">Availability</h2>
+
+                        <div class="field-group">
+                            <label class="field-label">Listing Status</label>
+                            <div class="toggle-wrapper">
+                                <input type="checkbox" id="availability-toggle" name="active" class="toggle-input"
+                                    checked>
+                                <label for="availability-toggle" class="toggle-label">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-text" id="toggle-text">Active</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="availability-dates" id="availability-dates">
+                            <div class="date-fields">
+                                <div class="field-group date-field">
+                                    <label for="start-date" class="field-label">Available From</label>
+                                    <div class="input-wrapper">
+                                        <input type="date" id="start-date" name="startDate" class="form-input">
+                                    </div>
+                                    <div class="error-message" id="start-date-error"></div>
+                                </div>
+
+                                <div class="field-group date-field">
+                                    <label for="end-date" class="field-label">Available Until</label>
+                                    <div class="input-wrapper">
+                                        <input type="date" id="end-date" name="endDate" class="form-input">
+                                    </div>
+                                    <div class="error-message" id="end-date-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-btn">
+                            <span class="btn-text">Cancel</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="publish-btn">
+                            <span class="btn-text">Publish Listing</span>
+                            <div class="btn-loader" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="success-icon">✅</div>
+            <h3>Listing Published Successfully!</h3>
+            <p>Your videogame has been added to the BitSwap marketplace.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">View Listings</button>
+                <button class="btn btn-primary" onclick="addAnother()">Add Another Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/shared.js"></script>
+    <script src="js/addvideogame.js"></script>
+</body>
+
+</html>

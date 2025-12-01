@@ -124,4 +124,61 @@ class BitSwapUtils {
             return [];
         }
     }
+
+    /**
+     * Initialize header navigation functionality
+     */
+    static initNavigation() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentPath = window.location.pathname;
+
+        // Set active nav link based on current page
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+
+            // Simple path matching
+            if (href && (currentPath.includes(href) ||
+                (href === 'listings.html' && currentPath.includes('listings')) ||
+                (href === 'addvideogame.html' && currentPath.includes('addvideogame')) ||
+                (href === 'login.html' && currentPath.includes('login')))) {
+                link.classList.add('active');
+            }
+        });
+
+        // Handle navigation clicks
+        navLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+
+                // Handle placeholder links
+                if (!href || href === '#') {
+                    e.preventDefault();
+                    console.log('Navigation to', this.textContent, 'not implemented yet');
+                    return;
+                }
+
+                // Update active state
+                navLinks.forEach(nl => nl.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Handle sign out button
+        const signOutBtn = document.getElementById('sign-out-btn');
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', function () {
+                // Navigate to login page
+                window.location.href = 'login.html';
+            });
+        }
+    }
+
+    /**
+     * Initialize all shared functionality
+     */
+    static init() {
+        this.initParticles();
+        this.initNavigation();
+    }
 }
