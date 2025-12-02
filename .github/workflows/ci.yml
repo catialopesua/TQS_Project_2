@@ -53,7 +53,7 @@ jobs:
         run: |
           mvn sonar:sonar \
             -Dsonar.projectKey=DCANascimento_TQS_Project_2 \
-            -Dsonar.organization=YOUR_ORG \
+            -Dsonar.organization=dcanascimento \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
