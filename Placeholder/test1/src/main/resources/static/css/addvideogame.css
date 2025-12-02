@@ -1,0 +1,597 @@
+/* ========================
+   ADD VIDEOGAME PAGE STYLES
+   ======================== */
+
+/* Page-specific background setup */
+body {
+    background-image: url('../assets/appbackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(11, 15, 26, 0.8);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+}
+
+/* ===== FORM STYLES ===== */
+
+.header-btn.secondary {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.header-btn.secondary:hover {
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+    box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
+}
+
+/* Main Content Layout */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+    min-height: calc(100vh - 80px);
+    position: relative;
+    z-index: 2;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* ===== FORM STRUCTURE ===== */
+
+.page-subtitle {
+    font-family: var(--font-secondary);
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Form Card */
+.form-card {
+    background: rgba(20, 24, 35, 0.9);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow:
+        0 0 30px rgba(74, 224, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(74, 224, 255, 0.1),
+            transparent);
+    transition: left 0.8s ease;
+    pointer-events: none;
+}
+
+.form-card:hover::before {
+    left: 100%;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-family: var(--font-primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--accent-secondary);
+    box-shadow: 0 0 10px var(--accent-secondary);
+}
+
+/* Form Fields */
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-label {
+    display: block;
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(15, 20, 30, 0.8);
+    border: 2px solid rgba(74, 224, 255, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    transition: var(--transition-base);
+    outline: none;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 3px rgba(74, 224, 255, 0.1),
+        0 0 20px rgba(74, 224, 255, 0.3);
+    background: rgba(15, 20, 30, 0.95);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Price Input */
+.price-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 20, 30, 0.8);
+    border: 2px solid rgba(74, 224, 255, 0.3);
+    border-radius: var(--radius-md);
+    padding: 0;
+    transition: var(--transition-base);
+}
+
+.price-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 3px rgba(74, 224, 255, 0.1),
+        0 0 20px rgba(74, 224, 255, 0.3);
+    background: rgba(15, 20, 30, 0.95);
+}
+
+.currency-symbol,
+.price-suffix {
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0 12px;
+}
+
+.price-input {
+    border: none;
+    background: transparent;
+    padding: 12px 0;
+    flex: 1;
+}
+
+.price-input:focus {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 2px dashed rgba(74, 224, 255, 0.5);
+    border-radius: var(--radius-lg);
+    background: rgba(15, 20, 30, 0.5);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: center;
+}
+
+.file-upload-label:hover {
+    border-color: var(--accent);
+    background: rgba(15, 20, 30, 0.8);
+    box-shadow: 0 0 20px rgba(74, 224, 255, 0.2);
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.upload-main {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.upload-sub {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Photo Preview */
+.photo-preview {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.photo-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid rgba(74, 224, 255, 0.3);
+    background: rgba(15, 20, 30, 0.8);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--error);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-base);
+}
+
+.photo-remove:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--error);
+}
+
+/* Toggle Switch */
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toggle-input {
+    position: absolute;
+    opacity: 0;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: rgba(255, 77, 109, 0.3);
+    border-radius: 15px;
+    transition: var(--transition-base);
+    border: 2px solid rgba(255, 77, 109, 0.5);
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background: var(--error);
+    border-radius: 50%;
+    transition: var(--transition-base);
+    box-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+}
+
+.toggle-input:checked+.toggle-label .toggle-slider {
+    background: rgba(87, 255, 138, 0.3);
+    border-color: rgba(87, 255, 138, 0.5);
+}
+
+.toggle-input:checked+.toggle-label .toggle-slider::before {
+    left: 32px;
+    background: var(--success);
+    box-shadow: 0 0 10px rgba(87, 255, 138, 0.5);
+}
+
+.toggle-text {
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+/* Date Fields */
+.availability-dates {
+    transition: var(--transition-base);
+    overflow: hidden;
+}
+
+.availability-dates.hidden {
+    opacity: 0;
+    max-height: 0;
+    pointer-events: none;
+}
+
+.date-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.date-field {
+    margin-bottom: 0;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(74, 224, 255, 0.2);
+}
+
+.btn {
+    position: relative;
+    padding: 14px 28px;
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    color: var(--bg);
+    box-shadow:
+        0 4px 15px rgba(74, 224, 255, 0.3),
+        0 0 20px rgba(74, 224, 255, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 25px rgba(74, 224, 255, 0.4),
+        0 0 30px rgba(74, 224, 255, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(74, 224, 255, 0.1);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+}
+
+.btn-secondary:hover {
+    background: rgba(74, 224, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(74, 224, 255, 0.3);
+}
+
+.btn-text {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-loader {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Error Messages - Page Specific Overrides */
+.field-group.error .price-wrapper {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.1);
+}
+
+/* Success Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: rgba(20, 24, 35, 0.95);
+    border: 2px solid var(--success);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow:
+        0 0 30px rgba(87, 255, 138, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.modal-content h3 {
+    font-family: var(--font-primary);
+    color: var(--success);
+    margin-bottom: 1rem;
+}
+
+.modal-content p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Animations */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 0 0.5rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .date-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .photo-preview {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .form-card {
+        padding: 1rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
