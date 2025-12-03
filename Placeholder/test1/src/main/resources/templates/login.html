@@ -14,8 +14,8 @@
         rel="stylesheet">
 
     <!-- Main stylesheet -->
-    <link rel="stylesheet" href="../static/css/shared.css">
-    <link rel="stylesheet" href="../static/css/login.css">
+    <link rel="stylesheet" th:href="@{/css/shared.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 
     <!-- Favicon (optional, falls back gracefully) -->
     <link rel="icon" type="image/png" href="assets/applogo.png">
@@ -35,7 +35,7 @@
             <!-- Logo header -->
             <header class="auth-header">
                 <div class="logo-container">
-                    <img src="../static/images/applogo.png" alt="BitSwap Logo" class="logo"
+                    <img src="@{/images/applogo.png}" alt="BitSwap Logo" class="logo"
                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="logo-fallback large" style="display: none;">
                         <span class="logo-text">BitSwap</span>
@@ -194,8 +194,9 @@
     </main>
 
     <!-- JavaScript -->
-    <script src="../static/js/shared.js"></script>
-    <script src="../static/js/login.js"></script>
+    <script th:src="@{/js/shared.js}"></script>
+    <script th:src="@{/js/login.js}"></script>
+
 </body>
 
 </html>
