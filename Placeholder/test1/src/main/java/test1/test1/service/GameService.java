@@ -1,10 +1,12 @@
 package test1.test1.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import test1.test1.model.Game;
 import test1.test1.repository.GameRepository;
-
-import java.util.List;
 
 @Service
 public class GameService {
@@ -15,8 +17,11 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public Game addGame(String title, String description, double pricePerDay) {
-        Game g = new Game(title, description, pricePerDay);
+    public Game addGame(String title, String description, double pricePerDay, 
+                       String condition, String photos, boolean active, 
+                       LocalDate startDate, LocalDate endDate, String ownerUsername) {
+        Game g = new Game(title, description, pricePerDay, condition, photos, 
+                         active, startDate, endDate, ownerUsername);
         return gameRepository.save(g);
     }
 
