@@ -30,7 +30,7 @@ public class Game {
     private String condition;
 
     @Column(length = 1000)
-    private String photos; // Stored as comma-separated base64 strings or URLs
+    private String photos; // Stored as comma-separated file paths (e.g., /images/game_images/filename.png)
 
     private boolean active = true;
 
