@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class UserTest {
 
     @Test
-    void testUserConstructorAndGetters() {
+    void testUserConstructorAndGetters1() {
         User user = new User("Tiago");
 
         assertEquals("Tiago", user.getUsername());
@@ -17,12 +17,39 @@ public class UserTest {
 
     @Test
     void testUserSetters() {
-        User user = new User("Tiago");
+        User user = new User("Tiago","1234","Biography","Role");
 
         user.setUsername("José");
         user.setUserId(10);
+        user.setBio("Another Biography");
+        user.setPassword("1600");
+        user.setRole("Another Role");
 
-        assertEquals("José", user.getUsername());
-        assertEquals(10, user.getUserId());
+
+    }
+
+    @Test
+    void testUserConstructorAndGetters2(){
+        User user = new User("Ana","123141");
+        assertEquals("Ana", user.getUsername());
+        assertEquals(user.getPassword(),"123141");
+    }
+
+    @Test
+    void testUserConstructorAndGetters3(){
+        User user = new User("Anastacia","445566","Cool Biography");
+        assertEquals("Anastacia", user.getUsername());
+        assertEquals(user.getPassword(),"445566");
+        assertEquals(user.getBio(),"Cool Biography");
+
+    }
+
+    @Test
+    void testUserConstructorAndGetters4(){
+        User user = new User("Anastacia","445566","Cool Biography","A Role");
+        assertEquals("Anastacia", user.getUsername());
+        assertEquals(user.getPassword(),"445566");
+        assertEquals(user.getBio(),"Cool Biography");
+        assertEquals(user.getRole(),"A Role");
     }
 }

@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -48,6 +50,9 @@ class GameControllerTest {
         request.setCondition("good");
         request.setPhotos("");
         request.setActive(true);
+        request.setStartDate("2025-12-01");
+        request.setEndDate("2025-12-31");
+        request.setOwnerUsername("testuser");
         
         ResponseEntity<Game> result = gameController.addGame(request, session);
 
@@ -55,6 +60,41 @@ class GameControllerTest {
         assertThat(result.getBody().getGameId()).isEqualTo(1);
         verify(gameService).addGame(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyBoolean(), any(), any(), anyString());
     }
+
+    @Test
+    void testAddGameUsesUsernameFromSession(){
+        when(session.getAttribute("username")).thenReturn("john");
+        when(gameService.addGame(
+            anyString(),
+            anyString(),
+            anyDouble(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            any(),
+            any(),
+            anyString()
+        )).thenReturn(new Game("title", "desc", 1.0));
+
+        GameRequest request = new GameRequest();
+        request.setTitle("title");
+        request.setDescription("desc");
+        request.setPrice(1.0);
+        request.setCondition("good");
+        request.setPhotos("photo.jpg");
+        request.setActive(true);
+        request.setStartDate("2025-12-01");
+        request.setEndDate("2025-12-31");
+        request.setOwnerUsername("ignored");
+
+        gameController.addGame(request, session);
+
+        verify(gameService).addGame(
+            anyString(), anyString(), anyDouble(), anyString(), anyString(),
+            anyBoolean(), any(), any(), eq("john")
+        );
+    }
+
 
     @Test
     void getAllGames_delegates() {

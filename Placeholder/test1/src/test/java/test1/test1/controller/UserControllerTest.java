@@ -1,10 +1,15 @@
 package test1.test1.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,4 +50,18 @@ class UserControllerTest {
         userController.getUserById(3);
         verify(userService).getUserById(3);
     }
+
+    @Test
+    void createUser_withPassword_callsFullCreateUser() {
+        User expected = new User();
+        when(userService.createUser("john", "123", "hello", "admin"))
+                .thenReturn(expected);
+
+        User result = userController.createUser("john", "123", "hello", "admin");
+
+        assertSame(expected, result);
+        verify(userService).createUser("john", "123", "hello", "admin");
+        verify(userService, never()).createUser("john"); // ensure other branch is NOT called
+    }
+
 }

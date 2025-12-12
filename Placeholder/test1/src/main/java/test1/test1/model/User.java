@@ -23,7 +23,7 @@ public class User {
     private String role;
 
     // JPA requires a default constructor
-    protected User() {
+    public User() {
     }
 
     public User(String username) {
