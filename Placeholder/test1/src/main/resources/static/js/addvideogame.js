@@ -73,8 +73,39 @@ async function handleFormSubmit(e) {
     btnLoader.style.display = 'block';
 
     try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Get logged-in user from localStorage
+        const storedData = localStorage.getItem('bitswap_demo_user');
+        const currentUser = JSON.parse(storedData || '{}');
+        const ownerUsername = currentUser.username || "null";
+
+        // Collect form data
+        const formData = {
+            title: document.getElementById('game-title').value.trim(),
+            description: document.getElementById('game-description').value.trim(),
+            condition: document.getElementById('game-condition').value,
+            photos: collectPhotoUrls(),
+            price: parseFloat(document.getElementById('rental-price').value),
+            active: document.getElementById('availability-toggle').checked,
+            startDate: document.getElementById('start-date').value,
+            endDate: document.getElementById('end-date').value,
+            ownerUsername: ownerUsername
+        };
+
+        // Send to backend
+        const response = await fetch('/games', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create listing');
+        }
+
+        const result = await response.json();
+        console.log('Game added successfully:', result);
 
         // Show success modal
         showSuccessModal();
@@ -90,6 +121,16 @@ async function handleFormSubmit(e) {
         btnText.style.display = 'block';
         btnLoader.style.display = 'none';
     }
+}
+
+function collectPhotoUrls() {
+    // Collect photo file names or URLs from the photo preview
+    const photoPreview = document.getElementById('photo-preview');
+    if (!photoPreview) return '';
+
+    const images = photoPreview.querySelectorAll('img');
+    const urls = Array.from(images).map(img => img.src.split('/').pop());
+    return urls.join(',');
 }
 
 function handleCancel() {

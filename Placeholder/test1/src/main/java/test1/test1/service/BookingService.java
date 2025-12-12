@@ -1,14 +1,15 @@
 package test1.test1.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import test1.test1.model.Booking;
 import test1.test1.model.Game;
 import test1.test1.model.User;
 import test1.test1.repository.BookingRepository;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class BookingService {
@@ -31,7 +32,7 @@ public class BookingService {
 
         Game game = gameService.getGame(gameId);
 
-        if (user == null || game == null || !game.isAvailable()) {
+        if (user == null || game == null || !game.isActive()) {
             return null; // simple validation
         }
 
@@ -40,8 +41,8 @@ public class BookingService {
 
         Booking booking = new Booking(user, game, start, end, totalPrice);
 
-        // mark game as rented
-        game.setAvailable(false);
+        // mark game as rented (inactive)
+        game.setActive(false);
         gameService.save(game);
 
         return bookingRepository.save(booking);

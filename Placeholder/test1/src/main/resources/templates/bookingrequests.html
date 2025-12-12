@@ -42,15 +42,15 @@
             <nav class="main-nav" role="navigation">
                 <ul class="nav-list">
                     <li><a href="#" class="nav-link">Analytics</a></li>
-                    <li><a href="bookingrequests.html" class="nav-link active">Booking Requests</a></li>
-                    <li><a href="addvideogame.html" class="nav-link">Add New Item</a></li>
+                    <li><a th:href="@{/bookingrequests}" class="nav-link active">Booking Requests</a></li>
+                    <li><a th:href="@{/addvideogame}" class="nav-link">Add New Item</a></li>
                     <li><a href="#" class="nav-link">Profile</a></li>
                 </ul>
             </nav>
 
             <!-- User actions -->
             <div class="header-actions">
-                <button class="header-btn secondary" id="sign-out-btn">Sign Out</button>
+                <a th:href="@{/login}" class="header-btn secondary" id="sign-out-btn">Sign Out</a>
             </div>
         </div>
     </header>
@@ -113,7 +113,7 @@
                     <h3 class="empty-title">No Booking Requests</h3>
                     <p class="empty-description">You don't have any booking requests at the moment. When renters request
                         to book your games, they'll appear here.</p>
-                    <a href="addvideogame.html" class="btn btn-primary">Add New Game</a>
+                    <a th:href="@{/addvideogame}" class="btn btn-primary">Add New Game</a>
                 </div>
 
                 <!-- Loading state -->

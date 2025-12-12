@@ -24,7 +24,10 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestParam String username) {
+    public User createUser(@RequestParam String username, @RequestParam(required = false) String password, @RequestParam(required = false) String bio, @RequestParam(required = false) String role) {
+        if (password != null && !password.isEmpty()) {
+            return userService.createUser(username, password, bio != null ? bio : "", role != null ? role : "renter");
+        }
         return userService.createUser(username);
     }
 

@@ -524,8 +524,9 @@ class GameListings {
     }
 
     handleSignOut() {
-        // Redirect to login page
-        window.location.href = 'login.html';
+        // Clear user data and redirect to login page
+        localStorage.removeItem('bitswap_demo_user');
+        window.location.href = '/login';
     }
 
     applyFilters() {

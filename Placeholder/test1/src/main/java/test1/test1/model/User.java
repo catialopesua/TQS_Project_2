@@ -13,12 +13,39 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = true)
+    private String password;
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(nullable = true)
+    private String role;
+
     // JPA requires a default constructor
-    protected User() {
+    public User() {
     }
 
     public User(String username) {
         this.username = username;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public User(String username, String password, String bio) {
+        this.username = username;
+        this.password = password;
+        this.bio = bio;
+    }
+
+    public User(String username, String password, String bio, String role) {
+        this.username = username;
+        this.password = password;
+        this.bio = bio;
+        this.role = role;
     }
 
     public Integer getUserId() {
@@ -35,5 +62,29 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

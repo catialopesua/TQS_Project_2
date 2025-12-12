@@ -42,15 +42,15 @@
             <nav class="main-nav" role="navigation">
                 <ul class="nav-list">
                     <li><a href="#" class="nav-link">Analytics</a></li>
-                    <li><a href="bookingrequests.html" class="nav-link">Booking Requests</a></li>
-                    <li><a href="addvideogame.html" class="nav-link active">Add New Item</a></li>
+                    <li><a th:href="@{/bookingrequests}" class="nav-link">Booking Requests</a></li>
+                    <li><a th:href="@{/addvideogame}" class="nav-link active">Add New Item</a></li>
                     <li><a href="#" class="nav-link">Profile</a></li>
                 </ul>
             </nav>
 
             <!-- User actions -->
             <div class="header-actions">
-                <button class="header-btn secondary" id="sign-out-btn">Sign Out</button>
+                <a th:href="@{/login}" class="header-btn secondary" id="sign-out-btn">Sign Out</a>
             </div>
         </div>
     </header>

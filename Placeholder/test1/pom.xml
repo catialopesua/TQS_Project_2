@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<sonar.organization>dcanascimento</sonar.organization>
 	</properties>
 
@@ -111,14 +111,17 @@
 			<artifactId>jakarta.persistence-api</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.hibernate.orm</groupId>
-			<artifactId>hibernate-community-dialects</artifactId>
-		</dependency>
+	<dependency>
+		<groupId>org.hibernate.orm</groupId>
+		<artifactId>hibernate-community-dialects</artifactId>
+	</dependency>
 
-	</dependencies>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-crypto</artifactId>
+	</dependency>
 
-	<build>
+	</dependencies>	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

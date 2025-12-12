@@ -75,7 +75,8 @@ class BookingRequestsManager {
         if (signOutBtn) {
             signOutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.href = 'login.html';
+                localStorage.removeItem('bitswap_demo_user');
+                window.location.href = '/login';
             });
         }
     }

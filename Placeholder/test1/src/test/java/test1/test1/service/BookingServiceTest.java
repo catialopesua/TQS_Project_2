@@ -45,7 +45,7 @@ class BookingServiceTest {
 
         game = new Game("Tetris", "desc", 2.0);
         game.setGameId(10);
-        game.setAvailable(true);
+        game.setActive(true);
     }
 
     @Test
@@ -62,7 +62,7 @@ class BookingServiceTest {
         assertThat(b).isNotNull();
         verify(gameService).save(game);
         verify(bookingRepository).save(any(Booking.class));
-        assertThat(game.isAvailable()).isFalse();
+        assertThat(game.isActive()).isFalse();
     }
 
     @Test
@@ -80,7 +80,7 @@ class BookingServiceTest {
     void createBooking_failsWhenGameUnavailable() {
         user.setUserId(1);
         when(userService.getAllUsers()).thenReturn(List.of(user));
-        game.setAvailable(false);
+        game.setActive(false);
         when(gameService.getGame(10)).thenReturn(game);
 
         Booking b = bookingService.createBooking(1, 10, LocalDate.now(), LocalDate.now().plusDays(1));

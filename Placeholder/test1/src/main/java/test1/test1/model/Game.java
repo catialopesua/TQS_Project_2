@@ -1,6 +1,13 @@
 package test1.test1.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "games")
@@ -13,22 +20,63 @@ public class Game {
     @Column(nullable = false)
     private String title;
 
+    @Column(length = 500)
     private String description;
 
     @Column(nullable = false)
     private double pricePerDay;
 
-    private boolean available = true;
+    @Column(nullable = false)
+    private String condition;
 
-    protected Game() {}
+    @Column(length = 1000)
+    private String photos; // Stored as comma-separated base64 strings or URLs
 
+    private boolean active = true;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+
+    @Column(nullable = true)
+    private String ownerUsername; // Owner's username (null for testing)
+
+    @Column(nullable = false)
+    private LocalDate createdAt;
+
+    protected Game() {
+        this.createdAt = LocalDate.now();
+    }
+
+    // Simple constructor for testing
     public Game(String title, String description, double pricePerDay) {
         this.title = title;
         this.description = description;
         this.pricePerDay = pricePerDay;
-        this.available = true;
+        this.condition = "good";
+        this.photos = "";
+        this.active = true;
+        this.startDate = null;
+        this.endDate = null;
+        this.ownerUsername = "test-user";
+        this.createdAt = LocalDate.now();
     }
 
+    public Game(String title, String description, double pricePerDay, String condition, 
+                String photos, boolean active, LocalDate startDate, LocalDate endDate, String ownerUsername) {
+        this.title = title;
+        this.description = description;
+        this.pricePerDay = pricePerDay;
+        this.condition = condition;
+        this.photos = photos;
+        this.active = active;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.ownerUsername = ownerUsername;
+        this.createdAt = LocalDate.now();
+    }
+
+    // Getters and Setters
     public Integer getGameId() {
         return gameId;
     }
@@ -61,11 +109,59 @@ public class Game {
         this.pricePerDay = pricePerDay;
     }
 
-    public boolean isAvailable() {
-        return available;
+    public String getCondition() {
+        return condition;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public String getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(String photos) {
+        this.photos = photos;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 }

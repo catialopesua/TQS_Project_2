@@ -32,7 +32,7 @@ class GameServiceTest {
             return g;
         });
 
-        Game result = gameService.addGame("Chess", "A classic game", 1.5);
+        Game result = gameService.addGame("Chess", "A classic game", 1.5, "good", "", true, null, null, "test-user");
 
         assertThat(result).isNotNull();
         assertThat(result.getGameId()).isEqualTo(1);

@@ -230,12 +230,18 @@ class AuthInterface {
 
         try {
             const formData = new FormData(form);
-            await this.simulateLogin(formData);
+            const user = await this.simulateLogin(formData);
 
             this.showSuccess(
                 'Welcome back!',
                 `Successfully logged in. Redirecting to dashboard...`
             );
+
+            // Redirect after 2 seconds based on role
+            setTimeout(() => {
+                const redirectUrl = user.role === 'owner' ? '/bookingrequests' : '/listings';
+                window.location.href = redirectUrl;
+            }, 2000);
 
         } catch (error) {
             this.showError(form.querySelector('[name="username"]'), 'Invalid username or password');
@@ -268,6 +274,12 @@ class AuthInterface {
                 `Welcome to BitSwap, ${user.username}! Your ${user.role} account is ready.`
             );
 
+            // Redirect after 2 seconds based on role
+            setTimeout(() => {
+                const redirectUrl = user.role === 'owner' ? '/bookingrequests' : '/listings';
+                window.location.href = redirectUrl;
+            }, 2000);
+
         } catch (error) {
             this.showError(form.querySelector('[name="username"]'), 'Registration failed. Please try again.');
         } finally {
@@ -287,27 +299,47 @@ class AuthInterface {
     }
 
     async simulateLogin(formData) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Call backend login endpoint
+        const body = new URLSearchParams();
+        body.append('username', formData.get('username'));
+        body.append('password', formData.get('password'));
 
-        const user = {
-            username: formData.get('username'),
-            loginTime: new Date().toISOString()
-        };
+        const res = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        });
 
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Login failed');
+        }
+
+        const user = await res.json();
         localStorage.setItem('bitswap_demo_user', JSON.stringify(user));
         return user;
     }
 
     async simulateRegister(formData) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Call backend register endpoint (uses existing /users POST)
+        const body = new URLSearchParams();
+        body.append('username', formData.get('username'));
+        body.append('password', formData.get('password'));
+        body.append('bio', formData.get('bio') || '');
+        body.append('role', formData.get('role') || 'renter');
 
-        const user = {
-            username: formData.get('username'),
-            role: formData.get('role'),
-            bio: formData.get('bio') || '',
-            createdAt: new Date().toISOString()
-        };
+        const res = await fetch('/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        });
 
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Registration failed');
+        }
+
+        const user = await res.json();
         localStorage.setItem('bitswap_demo_user', JSON.stringify(user));
         return user;
     }
