@@ -1,15 +1,12 @@
 package test1.test1.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,9 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.servlet.http.HttpSession;
 import test1.test1.dto.UserResponse;
-import test1.test1.model.Booking;
 import test1.test1.model.User;
-import test1.test1.service.BookingService;
 import test1.test1.service.UserService;
 
 @ExtendWith(MockitoExtension.class)

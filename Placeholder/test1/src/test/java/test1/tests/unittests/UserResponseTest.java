@@ -1,12 +1,10 @@
 package test1.tests.unittests;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.cucumber.java.BeforeAll;
 import test1.test1.dto.UserResponse;
 
 public class UserResponseTest {
