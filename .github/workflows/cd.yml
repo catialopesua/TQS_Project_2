@@ -137,12 +137,22 @@ jobs:
 
           $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
 
-          # Optional but recommended: SSH connectivity test
-          ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok" || exit 1
+          # SSH connectivity test (PowerShell-safe)
+          ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "SSH connection test failed"
+            exit 1
+          }
 
-          # Pipe LF-only deploy.sh into remote bash
-          ssh -i $keyPath -o StrictHostKeyChecking=no $target `
-            "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT" `
-            < scripts/deploy.sh
+          # Pipe deploy.sh to remote bash (PowerShell-safe)
+          Get-Content scripts/deploy.sh -Raw |
+            ssh -i $keyPath -o StrictHostKeyChecking=no `
+              $target `
+              "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT"
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Deployment failed"
+            exit 1
+          }
 
           Remove-Item -Force $keyPath
