@@ -494,9 +494,10 @@
 }
 
 .calendar-day.rented {
-    background: rgba(150, 150, 150, 0.15);
-    color: var(--text-muted);
-    text-decoration: line-through;
+    background: rgba(255, 77, 109, 0.2);
+    color: var(--accent-secondary);
+    border-color: rgba(255, 77, 109, 0.4);
+    cursor: not-allowed;
 }
 
 /* Action Section */

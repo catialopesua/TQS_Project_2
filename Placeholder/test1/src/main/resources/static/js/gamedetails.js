@@ -6,6 +6,7 @@ class GameDetails {
     constructor() {
         this.gameId = null;
         this.gameData = null;
+        this.bookings = [];
         this.currentCalendarDate = new Date();
         this.elements = this.initializeElements();
         this.init();
@@ -77,10 +78,31 @@ class GameDetails {
 
             this.gameData = await response.json();
             this.displayGameDetails();
+
+            // Load bookings for calendar
+            await this.loadBookings();
+            
+            // Render calendar after bookings are loaded
+            if (this.gameData.startDate && this.gameData.endDate) {
+                this.renderCalendar();
+            }
+
             this.showContent();
         } catch (error) {
             console.error('Error loading game details:', error);
             this.showError();
+        }
+    }
+
+    async loadBookings() {
+        try {
+            const response = await fetch(`/bookings/game/${this.gameId}`);
+            if (response.ok) {
+                this.bookings = await response.json();
+            }
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+            this.bookings = [];
         }
     }
 
@@ -106,8 +128,8 @@ class GameDetails {
         this.elements.gameDescription.textContent = this.gameData.description || 'No description available.';
 
         // Status
-        const statusClass = this.gameData.active ? 'available' : 'rented';
-        const statusText = this.gameData.active ? 'Available' : 'Rented';
+        const statusClass = 'available';
+        const statusText = 'Available for Booking';
         this.elements.statusBadge.className = `status-badge ${statusClass}`;
         this.elements.statusBadge.textContent = statusText;
 
@@ -123,7 +145,7 @@ class GameDetails {
         // Availability calendar
         if (this.gameData.startDate && this.gameData.endDate) {
             this.elements.availabilitySection.style.display = 'block';
-            this.renderCalendar();
+            // Calendar will be rendered after bookings are loaded
         } else {
             this.elements.availabilitySection.style.display = 'none';
         }
@@ -131,11 +153,7 @@ class GameDetails {
         // Images
         this.displayImages();
 
-        // Update rent button state
-        if (!this.gameData.active) {
-            this.elements.rentBtn.disabled = true;
-            this.elements.rentBtn.textContent = 'Currently Rented';
-        }
+        // Rent button is always enabled - users can book available date ranges
     }
 
     displayImages() {
@@ -288,11 +306,6 @@ class GameDetails {
     }
 
     handleRent() {
-        if (!this.gameData.active) {
-            alert('This game is currently rented.');
-            return;
-        }
-
         // Get logged-in user
         const userData = localStorage.getItem('bitswap_demo_user');
         if (!userData) {
@@ -309,17 +322,17 @@ class GameDetails {
             return;
         }
 
-        // Open booking modal and prefill dates
-        this.openBookingModal();
+        // Navigate to rent page with game ID
+        window.location.href = `/rent?id=${this.gameId}`;
     }
 
     openBookingModal() {
         if (!this.elements.bookingModal) return;
-        
+
         // Show modal first (non-blocking)
         this.elements.bookingError.style.display = 'none';
         this.elements.bookingModal.style.display = 'flex';
-        
+
         // Defer date calculations to avoid blocking
         requestAnimationFrame(() => {
             // Prefill modal title
@@ -337,7 +350,7 @@ class GameDetails {
             if (maxEnd) {
                 this.elements.bookingEnd.min = startStr;
                 this.elements.bookingEnd.max = BitSwapUtils.formatDate(maxEnd);
-                this.elements.bookingEnd.value = BitSwapUtils.formatDate(new Date(minStart.getTime() + 24*60*60*1000));
+                this.elements.bookingEnd.value = BitSwapUtils.formatDate(new Date(minStart.getTime() + 24 * 60 * 60 * 1000));
             } else {
                 // default end date is next day
                 const nextDay = new Date(minStart);
@@ -477,34 +490,40 @@ class GameDetails {
                 dayElement.classList.add('today');
             }
 
-            // Check availability
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(endDate);
-                end.setHours(0, 0, 0, 0);
+            // Check if date is outside game's availability period
+            const isOutsideAvailability = startDate && endDate &&
+                (currentDate < startDate || currentDate > endDate);
 
-                if (currentDate >= start && currentDate <= end) {
-                    // Within the availability range
-                    if (this.gameData.active) {
-                        dayElement.classList.add('available');
-                        dayElement.title = 'Available for rent';
-                    } else {
-                        dayElement.classList.add('rented');
-                        dayElement.title = 'Currently rented';
-                    }
-                } else {
-                    // Outside availability range
-                    dayElement.classList.add('unavailable');
-                    dayElement.title = 'Not available';
-                }
+            // Check if date is already rented
+            const isRented = this.isDateRented(currentDate);
+
+            if (isOutsideAvailability || isRented) {
+                // Red for unavailable or rented days
+                dayElement.classList.add('rented');
+                dayElement.title = isOutsideAvailability ? 'Not available' : 'Already rented';
+            } else if (startDate && endDate && currentDate >= startDate && currentDate <= endDate) {
+                // Green for available days
+                dayElement.classList.add('available');
+                dayElement.title = 'Available for rent';
             } else {
-                // No dates set, mark as unavailable
+                // Gray for days outside range
                 dayElement.classList.add('unavailable');
+                dayElement.title = 'Not in availability window';
             }
 
             this.elements.calendarDays.appendChild(dayElement);
         }
+    }
+
+    isDateRented(date) {
+        return this.bookings.some(booking => {
+            const start = new Date(booking.startDate);
+            const end = new Date(booking.endDate);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            date.setHours(0, 0, 0, 0);
+            return date >= start && date <= end;
+        });
     }
 }
 

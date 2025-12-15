@@ -650,9 +650,6 @@ class GameListings {
             retro: 'Retro'
         };
 
-        const statusClass = game.status === 'available' ? 'available' : 'rented';
-        const statusText = game.status === 'available' ? 'Available' : 'Rented';
-
         // Create star rating display
         const rating = Math.floor(game.owner.rating);
         const hasHalfStar = game.owner.rating % 1 >= 0.5;
@@ -702,7 +699,6 @@ class GameListings {
           </div>
           
           <div class="game-footer">
-            <span class="status-badge ${statusClass}">${statusText}</span>
             <button class="view-details-btn" data-game-id="${game.id}">
               See Details
             </button>

@@ -79,7 +79,16 @@ async function handleFormSubmit(e) {
         const ownerUsername = currentUser.username || "null";
 
         // Upload images first and get paths
-        const photoPaths = await uploadImages();
+        console.log('Starting image upload...');
+        let photoPaths = [];
+        try {
+            photoPaths = await uploadImages();
+            console.log('Images uploaded successfully:', photoPaths);
+        } catch (uploadError) {
+            console.error('Image upload failed:', uploadError);
+            // Continue without images rather than failing completely
+            photoPaths = [];
+        }
 
         // Collect form data
         const formData = {
@@ -89,10 +98,12 @@ async function handleFormSubmit(e) {
             photos: photoPaths.join(','), // Store comma-separated paths
             price: parseFloat(document.getElementById('rental-price').value),
             active: document.getElementById('availability-toggle').checked,
-            startDate: document.getElementById('start-date').value,
-            endDate: document.getElementById('end-date').value,
+            startDate: document.getElementById('start-date').value || null,
+            endDate: document.getElementById('end-date').value || null,
             ownerUsername: ownerUsername
         };
+
+        console.log('Submitting game data:', formData);
 
         // Send to backend
         const response = await fetch('/games', {
@@ -103,8 +114,12 @@ async function handleFormSubmit(e) {
             body: JSON.stringify(formData)
         });
 
+        console.log('Response status:', response.status);
+
         if (!response.ok) {
-            throw new Error('Failed to create listing');
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error('Failed to create listing: ' + response.status);
         }
 
         const result = await response.json();
@@ -115,8 +130,8 @@ async function handleFormSubmit(e) {
 
     } catch (error) {
         console.error('Error publishing listing:', error);
-        // Show error message
-        showErrorMessage('Failed to publish listing. Please try again.');
+        // Show error message with more detail
+        showErrorMessage('Failed to publish listing: ' + error.message);
 
     } finally {
         // Reset button state

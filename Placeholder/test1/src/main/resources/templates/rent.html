@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BitSwap - Rent Videogame">
+    <title>Rent Videogame - BitSwap</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/css/shared.css}">
+    <link rel="stylesheet" th:href="@{/css/rent.css}">
+</head>
+
+<body>
+    <!-- Background overlay -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Particles -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo section -->
+            <div class="logo-section">
+                <img th:src="@{/images/applogo.png}" alt="BitSwap Logo" class="header-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback small" style="display: none;">
+                    <span class="logo-text">BitSwap</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="main-nav" role="navigation">
+                <ul class="nav-list">
+                    <li><a th:href="@{/listings}" class="nav-link">Listings</a></li>
+                    <li><a th:href="@{/profile}" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- User actions -->
+            <div class="header-actions">
+                <a th:href="@{/login}" class="header-btn secondary" id="sign-out-btn">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading game details...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="error-state" style="display: none;">
+                <div class="empty-icon">❌</div>
+                <h2>Game Not Found</h2>
+                <p>The game you're trying to rent could not be found.</p>
+                <a th:href="@{/listings}" class="btn btn-primary">Back to Listings</a>
+            </div>
+
+            <!-- Rent Form -->
+            <div id="rent-content" class="rent-content" style="display: none;">
+                <div class="rent-grid">
+                    <!-- Left: Game Info -->
+                    <div class="game-info-card">
+                        <div class="game-image-container">
+                            <img id="game-image" src="" alt="Game" class="game-image">
+                            <div id="image-placeholder" class="image-placeholder" style="display: none;">
+                                <span class="placeholder-icon">🎮</span>
+                            </div>
+                        </div>
+                        <div class="game-info">
+                            <h2 id="game-title" class="game-title">Game Title</h2>
+                            <div class="game-meta">
+                                <span class="price-tag">
+                                    <span class="price-label">Price:</span>
+                                    <span id="game-price" class="price-value">$0.00/day</span>
+                                </span>
+                                <span class="condition-tag">
+                                    <span class="condition-label">Condition:</span>
+                                    <span id="game-condition" class="condition-value">Good</span>
+                                </span>
+                            </div>
+                            <p id="game-description" class="game-description"></p>
+                            <div class="owner-info">
+                                <div class="owner-avatar">
+                                    <span id="owner-initial">?</span>
+                                </div>
+                                <div class="owner-details">
+                                    <span class="owner-label">Owner</span>
+                                    <span id="owner-name" class="owner-name">Unknown</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Rental Form -->
+                    <div class="rental-form-card">
+                        <h2 class="form-title">Rental Request</h2>
+                        <p class="form-subtitle">Select your rental dates</p>
+
+                        <form id="rental-form" class="rental-form">
+                            <div class="field-group">
+                                <label for="start-date" class="field-label">
+                                    <span class="label-icon">📅</span>
+                                    Start Date
+                                </label>
+                                <input type="date" id="start-date" name="startDate" class="form-input" required>
+                                <span class="error-message" id="start-date-error"></span>
+                            </div>
+
+                            <div class="field-group">
+                                <label for="end-date" class="field-label">
+                                    <span class="label-icon">📅</span>
+                                    End Date
+                                </label>
+                                <input type="date" id="end-date" name="endDate" class="form-input" required>
+                                <span class="error-message" id="end-date-error"></span>
+                            </div>
+
+                            <div class="rental-summary">
+                                <div class="summary-row">
+                                    <span class="summary-label">Number of Days:</span>
+                                    <span id="num-days" class="summary-value">0</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span class="summary-label">Price per Day:</span>
+                                    <span id="price-per-day" class="summary-value">$0.00</span>
+                                </div>
+                                <div class="summary-row total-row">
+                                    <span class="summary-label">Total Price:</span>
+                                    <span id="total-price" class="summary-value total-price">$0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" id="pay-btn" class="btn btn-primary">
+                                    <span class="btn-icon">💳</span>
+                                    Pay & Book
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Calendar View (Optional) -->
+                <div class="availability-calendar">
+                    <h3 class="calendar-header">Availability Calendar</h3>
+                    <div class="calendar-container">
+                        <div class="calendar-controls">
+                            <button id="prev-month" class="calendar-nav-btn">‹</button>
+                            <h4 id="calendar-title" class="calendar-title">Month Year</h4>
+                            <button id="next-month" class="calendar-nav-btn">›</button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day-header">Sun</div>
+                            <div class="calendar-day-header">Mon</div>
+                            <div class="calendar-day-header">Tue</div>
+                            <div class="calendar-day-header">Wed</div>
+                            <div class="calendar-day-header">Thu</div>
+                            <div class="calendar-day-header">Fri</div>
+                            <div class="calendar-day-header">Sat</div>
+                            <div id="calendar-days" class="calendar-days">
+                                <!-- Days will be inserted by JS -->
+                            </div>
+                        </div>
+                        <div class="calendar-legend">
+                            <span class="legend-item">
+                                <span class="legend-color available"></span>
+                                Available
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color rented"></span>
+                                Unavailable/Rented
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color selected"></span>
+                                Selected
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content success-modal-content">
+            <div class="success-icon">✓</div>
+            <h3 class="success-title">Booking Confirmed!</h3>
+            <p class="success-message">Your rental request has been successfully submitted.</p>
+            <div class="success-details">
+                <p><strong>Game:</strong> <span id="success-game-title"></span></p>
+                <p><strong>Dates:</strong> <span id="success-dates"></span></p>
+                <p><strong>Total:</strong> <span id="success-total"></span></p>
+            </div>
+            <button id="success-ok-btn" class="btn btn-primary">View My Bookings</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:src="@{/js/shared.js}"></script>
+    <script th:src="@{/js/rent.js}"></script>
+</body>
+
+</html>
