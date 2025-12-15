@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Create deploy script
-        shell: powershell
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         env:
           REGISTRY: ${{ env.REGISTRY }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
@@ -102,7 +102,7 @@ jobs:
           $script | Out-File -FilePath deploy.sh -Encoding ASCII
 
       - name: Deploy via SSH
-        shell: powershell
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
