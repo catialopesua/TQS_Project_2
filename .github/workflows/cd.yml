@@ -139,13 +139,8 @@ exit 1
             exit 1
           }
 
-          # Send the deploy script as base64 to preserve exact bytes (avoid BOM/CRLF issues)
-          $bytes = [IO.File]::ReadAllBytes($deployPath)
-          $b64 = [Convert]::ToBase64String($bytes)
-
-          # Use SSH and base64 decode on the remote side to recreate the file exactly
-          $remoteCmd = 'base64 -d > /tmp/deploy.sh && chmod +x /tmp/deploy.sh && bash /tmp/deploy.sh'
-          $b64 | & ssh -i $keyPath -o StrictHostKeyChecking=no $sshTarget $remoteCmd
+          # Pipe deploy script to remote bash
+          Get-Content $deployPath | & ssh -i $keyPath -o StrictHostKeyChecking=no $sshTarget 'bash -s'
           $ret = $LASTEXITCODE
           Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
           exit $ret
