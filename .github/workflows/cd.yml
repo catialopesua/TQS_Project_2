@@ -109,7 +109,8 @@ jobs:
           SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
         run: |
           $keyPath = "$PWD\deploy_key.pem"
-          Set-Content -Path $keyPath -Value $env:SERVER_SSH_KEY -NoNewline
+          # Write key in binary mode to preserve exact format (no line ending conversion)
+          [System.IO.File]::WriteAllText($keyPath, $env:SERVER_SSH_KEY, [System.Text.Encoding]::ASCII)
           icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
           $sshTarget = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
           Get-Content deploy.sh | ssh -i $keyPath -o StrictHostKeyChecking=no $sshTarget 'bash -s'
