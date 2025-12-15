@@ -74,34 +74,36 @@ jobs:
           HOST_PORT: ${{ env.HOST_PORT }}
         run: |
           $script = @"
-          set -e
-          echo "Pulling latest image..."
-          docker pull `$env:REGISTRY/`$env:IMAGE_NAME:latest
-          echo "Stopping and removing old container..."
-          docker stop `$env:CONTAINER_NAME || true
-          docker rm `$env:CONTAINER_NAME || true
-          echo "Starting new container..."
-          docker run -d --name `$env:CONTAINER_NAME -p `$env:HOST_PORT:`$env:APP_PORT --restart unless-stopped --health-interval=30s --health-timeout=3s --health-retries=3 --health-start-period=40s `$env:REGISTRY/`$env:IMAGE_NAME:latest
-          echo "Waiting for app to be healthy..."
-          max_attempts=30
-          attempt=0
-          while [ `$attempt -lt `$max_attempts ]; do
-            if docker inspect --format='{{.State.Health.Status}}' `$env:CONTAINER_NAME | grep -q "healthy"; then
-              echo "✓ App is healthy!"
-              exit 0
-            fi
-            attempt=`$((attempt + 1))
-            echo "Attempt `$attempt/`$max_attempts: Waiting for app to be ready..."
-            sleep 2
-          done
-          echo "✗ App failed to become healthy!"
-          docker logs `$env:CONTAINER_NAME
-          docker stop `$env:CONTAINER_NAME
-          exit 1
-          "@
+set -e
+echo "Pulling latest image..."
+docker pull $env:REGISTRY/$env:IMAGE_NAME:latest
+echo "Stopping and removing old container..."
+docker stop $env:CONTAINER_NAME || true
+docker rm $env:CONTAINER_NAME || true
+echo "Starting new container..."
+docker run -d --name $env:CONTAINER_NAME -p $env:HOST_PORT:$env:APP_PORT --restart unless-stopped --health-interval=30s --health-timeout=3s --health-retries=3 --health-start-period=40s $env:REGISTRY/$env:IMAGE_NAME:latest
+echo "Waiting for app to be healthy..."
+max_attempts=30
+attempt=0
+while [ `$attempt -lt `$max_attempts ]; do
+  if docker inspect --format='{{.State.Health.Status}}' $env:CONTAINER_NAME | grep -q "healthy"; then
+    echo "✓ App is healthy!"
+    exit 0
+  fi
+  attempt=`$((attempt + 1))
+  echo "Attempt `$attempt/`$max_attempts: Waiting for app to be ready..."
+  sleep 2
+done
+echo "✗ App failed to become healthy!"
+docker logs $env:CONTAINER_NAME
+docker stop $env:CONTAINER_NAME
+exit 1
+"@
           $deployPath = Join-Path $env:RUNNER_TEMP 'deploy.sh'
           New-Item -ItemType Directory -Force -Path (Split-Path $deployPath) | Out-Null
-          $script | Out-File -FilePath $deployPath -Encoding ASCII
+          # Write without BOM, LF only
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [System.IO.File]::WriteAllText($deployPath, $script, $utf8NoBom)
 
       - name: Deploy via SSH
         shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
