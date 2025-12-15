@@ -108,7 +108,7 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
         run: |
-          $keyPath = "$PWD\deploy_key.pem"
+          $keyPath = "$env:TEMP\deploy_key.pem"
           # Write key in binary mode to preserve exact format (no line ending conversion)
           [System.IO.File]::WriteAllText($keyPath, $env:SERVER_SSH_KEY, [System.Text.Encoding]::ASCII)
           icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
