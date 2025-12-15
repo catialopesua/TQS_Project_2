@@ -108,51 +108,41 @@ jobs:
           [System.IO.File]::WriteAllText($deployPath, $script, $utf8NoBom)
 
       - name: Deploy via SSH
-        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        shell: powershell -NoProfile -ExecutionPolicy Bypass
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+          APP_PORT: ${{ env.APP_PORT }}
+          HOST_PORT: ${{ env.HOST_PORT }}
         run: |
-          $deployPath = Join-Path $env:RUNNER_TEMP 'deploy.sh'
           $keyPath = Join-Path $env:RUNNER_TEMP 'deploy_key.pem'
-          New-Item -ItemType Directory -Force -Path (Split-Path $keyPath) | Out-Null
+
+          # Normalize key (works for base64 OR raw)
           $raw = $env:SERVER_SSH_KEY.Trim()
           if ($raw.StartsWith('"') -and $raw.EndsWith('"')) { $raw = $raw.Trim('"') }
 
-          # Attempt to decode as base64; if that fails, write raw key with normalized newlines
           try {
             $bytes = [Convert]::FromBase64String($raw)
             [IO.File]::WriteAllBytes($keyPath, $bytes)
           } catch {
             $normalized = $raw -replace "`r`n","`n"
-            [System.IO.File]::WriteAllText($keyPath, $normalized, [System.Text.Encoding]::UTF8)
+            [IO.File]::WriteAllText($keyPath, $normalized, [Text.Encoding]::ASCII)
           }
 
           icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
-          $sshTarget = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
 
-          # Test SSH connection non-interactively
-          $sshTest = & ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=10 $sshTarget 'echo ok' 2>&1
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "SSH connection test failed: $sshTest"
-            Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
-            exit 1
-          }
+          $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
 
-          # Pipe deploy script to remote bash
-          Get-Content $deployPath | & ssh -i $keyPath -o StrictHostKeyChecking=no $sshTarget 'bash -s'
-          $ret = $LASTEXITCODE
-          Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
-          exit $ret
+          # Optional but recommended: SSH connectivity test
+          ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok" || exit 1
 
-      - name: Notify deployment status
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = context.job.status;
-            const color = status === 'success' ? '00AA00' : 'FF0000';
-            const emoji = status === 'success' ? '✓' : '✗';
-            console.log(`${emoji} Deployment ${status}`);
+          # Pipe LF-only deploy.sh into remote bash
+          ssh -i $keyPath -o StrictHostKeyChecking=no $target `
+            "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT" `
+            < scripts/deploy.sh
 
+          Remove-Item -Force $keyPath
