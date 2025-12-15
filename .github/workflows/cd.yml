@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: dcanascimento/tqs_project_2
   CONTAINER_NAME: tqs-app
   APP_PORT: 8080
   HOST_PORT: 80
