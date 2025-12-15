@@ -108,7 +108,7 @@ jobs:
           [System.IO.File]::WriteAllText($deployPath, $script, $utf8NoBom)
 
       - name: Deploy via SSH
-        shell: powershell -NoProfile -ExecutionPolicy Bypass
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
