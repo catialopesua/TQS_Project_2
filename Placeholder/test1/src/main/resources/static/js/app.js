@@ -289,12 +289,39 @@ class AuthInterface {
     async simulateLogin(formData) {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
+        const username = formData.get('username');
+        const password = formData.get('password');
+
+        // Check for admin credentials
+        if (username === 'Admin1' && password === 'Admin1') {
+            const user = {
+                username: username,
+                role: 'admin',
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('bitswap_demo_user', JSON.stringify(user));
+
+            // Redirect to admin page after a short delay
+            setTimeout(() => {
+                window.location.href = '/admin';
+            }, 1500);
+
+            return user;
+        }
+
+        // Regular user login
         const user = {
-            username: formData.get('username'),
+            username: username,
             loginTime: new Date().toISOString()
         };
 
         localStorage.setItem('bitswap_demo_user', JSON.stringify(user));
+
+        // Redirect to listings page after a short delay
+        setTimeout(() => {
+            window.location.href = '/listings';
+        }, 1500);
+
         return user;
     }
 

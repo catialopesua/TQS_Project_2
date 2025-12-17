@@ -683,7 +683,6 @@ class GameListings {
           </div>
           
           <div class="game-footer">
-            <span class="status-badge ${statusClass}">${statusText}</span>
             <button class="view-details-btn" data-game-id="${game.id}">
               See Details
             </button>

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Placeholder/test1/Dockerfile
+    container_name: tqs-app-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    networks:
+      - tqs-network
+    volumes:
+      - ./Placeholder/test1/target:/app/target:ro
+    profiles:
+      - dev
+
+  app-test:
+    build:
+      context: .
+      dockerfile: Placeholder/test1/Dockerfile
+      target: build
+    container_name: tqs-app-test
+    working_dir: /app
+    environment:
+      - MAVEN_OPTS=-Dmaven.repo.local=/app/.m2
+    volumes:
+      - ./Placeholder/test1:/app
+      - maven-cache:/app/.m2
+    command: mvn clean verify
+    networks:
+      - tqs-network
+    profiles:
+      - test
+
+networks:
+  tqs-network:
+    driver: bridge
+
+volumes:
+  maven-cache:

@@ -1,0 +1,560 @@
+/* Rent Page Styles */
+
+.rent-content {
+    padding: var(--space-xl) 0;
+}
+
+.rent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+}
+
+/* Game Info Card */
+.game-info-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.game-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+    background: var(--panel-light);
+}
+
+.game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-base);
+}
+
+.game-image:hover {
+    transform: scale(1.05);
+}
+
+.image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--panel-light), var(--panel));
+}
+
+.placeholder-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+.game-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.game-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    color: var(--accent);
+    margin: 0;
+    text-shadow: 0 0 10px rgba(74, 224, 255, 0.3);
+}
+
+.game-meta {
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.price-tag,
+.condition-tag {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.price-label,
+.condition-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    color: var(--accent-tertiary);
+    font-weight: 700;
+}
+
+.condition-value {
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.game-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: var(--space-md) 0;
+}
+
+.owner-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--panel-light);
+    border-radius: var(--radius-md);
+    margin-top: auto;
+}
+
+.owner-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+    color: var(--bg);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.owner-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.owner-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.owner-name {
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Rental Form Card */
+.rental-form-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.form-subtitle {
+    color: var(--text-muted);
+    margin-bottom: var(--space-xl);
+}
+
+.rental-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.label-icon {
+    font-size: var(--font-size-lg);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--panel-light);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-base);
+    transition: var(--transition-base);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(74, 224, 255, 0.1);
+    background: var(--bg-secondary);
+}
+
+.form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: var(--error);
+    font-size: var(--font-size-sm);
+    min-height: 20px;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* Rental Summary */
+.rental-summary {
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+}
+
+.summary-row:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.summary-value {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.total-row {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--accent) !important;
+}
+
+.total-row .summary-label {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+}
+
+.total-row .summary-value {
+    color: var(--accent-tertiary);
+    font-size: var(--font-size-xl);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.btn-icon {
+    margin-right: var(--space-xs);
+}
+
+/* Availability Calendar */
+.availability-calendar {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.calendar-header {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.calendar-container {
+    max-width: 100%;
+}
+
+.calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.calendar-nav-btn {
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.calendar-nav-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: var(--glow-accent);
+}
+
+.calendar-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-xs);
+}
+
+.calendar-day-header {
+    text-align: center;
+    padding: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.calendar-days {
+    display: contents;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.calendar-day:hover {
+    background: var(--accent);
+    color: var(--bg);
+    transform: scale(1.05);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.calendar-day.empty:hover {
+    transform: none;
+}
+
+.calendar-day.rented {
+    background: var(--accent-secondary);
+    color: var(--text-primary);
+    cursor: not-allowed;
+}
+
+.calendar-day.rented:hover {
+    transform: none;
+    background: var(--accent-secondary);
+}
+
+.calendar-day.selected {
+    background: var(--accent-tertiary);
+    color: var(--bg);
+    font-weight: 700;
+}
+
+.calendar-day.today {
+    border-color: var(--accent);
+    font-weight: 700;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: var(--space-lg);
+    justify-content: center;
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.legend-color.available {
+    background: var(--panel-light);
+}
+
+.legend-color.rented {
+    background: var(--accent-secondary);
+}
+
+.legend-color.selected {
+    background: var(--accent-tertiary);
+}
+
+/* Success Modal */
+.success-modal-content {
+    text-align: center;
+    max-width: 500px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-lg);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-tertiary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--bg);
+    box-shadow: var(--glow-accent-tertiary);
+}
+
+.success-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    color: var(--accent-tertiary);
+    margin-bottom: var(--space-md);
+}
+
+.success-message {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.success-details {
+    background: var(--panel-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    text-align: left;
+}
+
+.success-details p {
+    margin: var(--space-sm) 0;
+    color: var(--text-primary);
+}
+
+.success-details strong {
+    color: var(--accent);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .rent-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+}
+
+@media (max-width: 768px) {
+    .game-meta {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .calendar-grid {
+        gap: 2px;
+    }
+
+    .calendar-day {
+        font-size: 0.7rem;
+    }
+
+    .calendar-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .rent-content {
+        padding: var(--space-md) 0;
+    }
+
+    .game-info-card,
+    .rental-form-card,
+    .availability-calendar {
+        padding: var(--space-md);
+    }
+
+    .game-title,
+    .form-title {
+        font-size: var(--font-size-xl);
+    }
+}

@@ -61,7 +61,6 @@ public class ImageUploadController {
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(createErrorResponse("Failed to upload image: " + e.getMessage()));
         }

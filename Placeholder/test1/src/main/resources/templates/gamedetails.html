@@ -181,6 +181,26 @@
                                 Contact Owner
                             </button>
                         </div>
+                        
+                        <!-- Booking Modal -->
+                            <div id="booking-modal" class="modal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.5);">
+                                <div class="modal-content" style="background:#fff; padding:20px; border-radius:6px; width:320px;">
+                                    <h3 id="modal-game-title">Rent Game</h3>
+                                    <div style="margin-top:10px;">
+                                        <label for="booking-start">Start Date</label>
+                                        <input type="date" id="booking-start" class="form-control" />
+                                    </div>
+                                    <div style="margin-top:10px;">
+                                        <label for="booking-end">End Date</label>
+                                        <input type="date" id="booking-end" class="form-control" />
+                                    </div>
+                                    <div id="booking-error" style="color:#a94442; margin-top:8px; display:none;"></div>
+                                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+                                        <button id="booking-cancel" class="btn btn-secondary">Cancel</button>
+                                        <button id="booking-confirm" class="btn btn-primary">Confirm Booking</button>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -189,7 +209,7 @@
 
     <!-- Scripts -->
     <script th:src="@{/js/shared.js}"></script>
-    <script th:src="@{/js/gamedetails.js}"></script>
+    <script th:src="@{/js/gamedetails.js}" defer></script>
 </body>
 
 </html>

@@ -32,23 +32,28 @@ public class BookingService {
 
         Game game = gameService.getGame(gameId);
 
-        if (user == null || game == null || !game.isActive()) {
+        if (user == null || game == null) {
             return null; // simple validation
         }
 
-        long days = ChronoUnit.DAYS.between(start, end);
+        long days = ChronoUnit.DAYS.between(start, end) + 1; // +1 to include both start and end days
         double totalPrice = days * game.getPricePerDay();
 
         Booking booking = new Booking(user, game, start, end, totalPrice);
 
-        // mark game as rented (inactive)
-        game.setActive(false);
-        gameService.save(game);
-
+        // Don't mark game as inactive - multiple bookings for different dates are allowed
         return bookingRepository.save(booking);
     }
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
+    }
+
+    public List<Booking> getBookingsByGame(Integer gameId) {
+        return bookingRepository.findByGameGameId(gameId);
+    }
+
+    public List<Booking> getBookingsByUser(Integer userId) {
+        return bookingRepository.findByUserUserId(userId);
     }
 }

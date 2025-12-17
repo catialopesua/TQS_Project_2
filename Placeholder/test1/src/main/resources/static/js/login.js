@@ -239,7 +239,12 @@ class AuthInterface {
 
             // Redirect after 2 seconds based on role
             setTimeout(() => {
-                const redirectUrl = user.role === 'owner' ? '/bookingrequests' : '/listings';
+                let redirectUrl = '/listings';
+                if (user.role === 'admin') {
+                    redirectUrl = '/admin';
+                } else if (user.role === 'owner') {
+                    redirectUrl = '/bookingrequests';
+                }
                 window.location.href = redirectUrl;
             }, 2000);
 
@@ -276,7 +281,12 @@ class AuthInterface {
 
             // Redirect after 2 seconds based on role
             setTimeout(() => {
-                const redirectUrl = user.role === 'owner' ? '/bookingrequests' : '/listings';
+                let redirectUrl = '/listings';
+                if (user.role === 'admin') {
+                    redirectUrl = '/admin';
+                } else if (user.role === 'owner') {
+                    redirectUrl = '/bookingrequests';
+                }
                 window.location.href = redirectUrl;
             }, 2000);
 
@@ -299,10 +309,26 @@ class AuthInterface {
     }
 
     async simulateLogin(formData) {
+        // Development/admin shortcut: allow Admin1/Admin1 to work locally
+        const username = formData.get('username');
+        const password = formData.get('password');
+
+        if (username === 'Admin1' && password === 'Admin1') {
+            const user = {
+                id: -1,
+                username: 'Admin1',
+                role: 'admin',
+                bio: 'Administrator (local dev)',
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('bitswap_demo_user', JSON.stringify(user));
+            return user;
+        }
+
         // Call backend login endpoint
         const body = new URLSearchParams();
-        body.append('username', formData.get('username'));
-        body.append('password', formData.get('password'));
+        body.append('username', username);
+        body.append('password', password);
 
         const res = await fetch('/auth/login', {
             method: 'POST',

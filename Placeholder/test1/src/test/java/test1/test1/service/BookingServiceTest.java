@@ -60,9 +60,11 @@ class BookingServiceTest {
         Booking b = bookingService.createBooking(1, 10, start, end);
 
         assertThat(b).isNotNull();
-        verify(gameService).save(game);
+        assertThat(b.getUser()).isEqualTo(user);
+        assertThat(b.getGame()).isEqualTo(game);
+        assertThat(b.getStartDate()).isEqualTo(start);
+        assertThat(b.getEndDate()).isEqualTo(end);
         verify(bookingRepository).save(any(Booking.class));
-        assertThat(game.isActive()).isFalse();
     }
 
     @Test
@@ -80,8 +82,8 @@ class BookingServiceTest {
     void createBooking_failsWhenGameUnavailable() {
         user.setUserId(1);
         when(userService.getAllUsers()).thenReturn(List.of(user));
-        game.setActive(false);
-        when(gameService.getGame(10)).thenReturn(game);
+        // Return null instead of setting active to false, since the service only checks for null
+        when(gameService.getGame(10)).thenReturn(null);
 
         Booking b = bookingService.createBooking(1, 10, LocalDate.now(), LocalDate.now().plusDays(1));
 
@@ -99,5 +101,59 @@ class BookingServiceTest {
         var list = bookingService.getAllBookings();
 
         assertThat(list).hasSize(2);
+    }
+
+    @Test
+    void getBookingsByGame_returnsAllBookingsForGame() {
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(3);
+        
+        Booking booking1 = new Booking(user, game, start, end, 10.0);
+        Booking booking2 = new Booking(user, game, start.plusDays(5), end.plusDays(5), 12.0);
+        
+        when(bookingRepository.findByGameGameId(10)).thenReturn(List.of(booking1, booking2));
+        
+        List<Booking> bookings = bookingService.getBookingsByGame(10);
+        
+        assertThat(bookings).hasSize(2);
+        assertThat(bookings).contains(booking1, booking2);
+        verify(bookingRepository).findByGameGameId(10);
+    }
+
+    @Test
+    void getBookingsByGame_returnsEmptyWhenNoBookings() {
+        when(bookingRepository.findByGameGameId(10)).thenReturn(List.of());
+        
+        List<Booking> bookings = bookingService.getBookingsByGame(10);
+        
+        assertThat(bookings).isEmpty();
+        verify(bookingRepository).findByGameGameId(10);
+    }
+
+    @Test
+    void getBookingsByUser_returnsAllBookingsForUser() {
+        LocalDate start = LocalDate.now();
+        LocalDate end = start.plusDays(3);
+        
+        Booking booking1 = new Booking(user, game, start, end, 10.0);
+        Booking booking2 = new Booking(user, game, start.plusDays(5), end.plusDays(5), 12.0);
+        
+        when(bookingRepository.findByUserUserId(1)).thenReturn(List.of(booking1, booking2));
+        
+        List<Booking> bookings = bookingService.getBookingsByUser(1);
+        
+        assertThat(bookings).hasSize(2);
+        assertThat(bookings).contains(booking1, booking2);
+        verify(bookingRepository).findByUserUserId(1);
+    }
+
+    @Test
+    void getBookingsByUser_returnsEmptyWhenNoBookings() {
+        when(bookingRepository.findByUserUserId(1)).thenReturn(List.of());
+        
+        List<Booking> bookings = bookingService.getBookingsByUser(1);
+        
+        assertThat(bookings).isEmpty();
+        verify(bookingRepository).findByUserUserId(1);
     }
 }
