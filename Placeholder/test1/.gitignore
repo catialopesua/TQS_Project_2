@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+# Ignore test-generated images
+
+src/main/resources/static/images/game_images/*.png
+src/main/resources/static/images/game_images/*.jpg
