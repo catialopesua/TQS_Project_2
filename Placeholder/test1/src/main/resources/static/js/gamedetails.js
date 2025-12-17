@@ -400,8 +400,8 @@ class GameDetails {
         if (start && end) {
             const startDate = new Date(start);
             const endDate = new Date(end);
-            const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-            const dailyRate = this.gameData.price || 9.99;
+            const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const dailyRate = this.gameData.pricePerDay || 9.99;
             const totalPrice = daysCount > 0 ? daysCount * dailyRate : 0;
             
             this.updateBookingPriceSummary(dailyRate, daysCount, totalPrice);
@@ -445,8 +445,8 @@ class GameDetails {
         // Calculate total price
         const startDate = new Date(start);
         const endDate = new Date(end);
-        const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-        const dailyRate = this.gameData.price || 9.99;
+        const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        const dailyRate = this.gameData.pricePerDay || 9.99;
         const totalPrice = daysCount * dailyRate;
 
         // Update booking price summary
