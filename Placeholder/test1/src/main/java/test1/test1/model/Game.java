@@ -47,7 +47,8 @@ public class Game {
     @Column(nullable = false)
     private LocalDate createdAt;
 
-    protected Game() {
+    
+    public Game() {
         this.createdAt = LocalDate.now();
     }
 

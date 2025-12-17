@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import java.time.LocalDate;
+import java.lang.reflect.Constructor;
 import org.junit.jupiter.api.Test;
 
 import test1.test1.model.Game;
@@ -58,6 +60,29 @@ public class GameTest {
         assertEquals(startDate, game.getStartDate());
         assertEquals(endDate, game.getEndDate());
         assertEquals("admin", game.getOwnerUsername());
+    }
+
+    @Test
+    void testProtectedNoArgsConstructor_viaReflection(){
+        try {
+            Constructor<Game> ctor = Game.class.getDeclaredConstructor();
+            ctor.setAccessible(true);
+            Game game = ctor.newInstance();
+
+            assertNull(game.getTitle());
+            assertNull(game.getDescription());
+            assertEquals(0.0, game.getPricePerDay());
+            assertNull(game.getCondition());
+            assertNull(game.getPhotos());
+            assertNull(game.getTags());
+            assertTrue(game.isActive()); // default field initialization
+            assertNull(game.getStartDate());
+            assertNull(game.getEndDate());
+            assertNull(game.getOwnerUsername());
+            assertNotNull(game.getCreatedAt());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

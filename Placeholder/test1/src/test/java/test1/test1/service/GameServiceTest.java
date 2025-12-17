@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -190,4 +193,28 @@ class GameServiceTest {
         assertThat(result).isFalse();
         verify(gameRepository).findById(999);
     }
+
+
+    @Test
+    void testGetGamesByOwner(){
+        String ownerUsername = "Joanne";
+        Game game1 = new Game();
+        game1.setGameId(1);
+        game1.setOwnerUsername(ownerUsername);
+
+        Game game2 = new Game();
+        game2.setGameId(2);
+        game2.setOwnerUsername(ownerUsername);
+
+        List<Game> mockGames = List.of(game1, game2);
+
+        when(gameRepository.findByOwnerUsername(ownerUsername)).thenReturn(mockGames);
+
+        List<Game> result = gameService.getGamesByOwner(ownerUsername);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(ownerUsername, result.get(0).getOwnerUsername());
+
+    }
+
 }   
