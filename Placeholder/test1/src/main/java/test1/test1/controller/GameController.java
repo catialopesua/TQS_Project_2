@@ -74,8 +74,14 @@ public class GameController {
             System.out.println("Game saved with owner: " + game.getOwnerUsername());
             
             return ResponseEntity.ok(game);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | java.time.format.DateTimeParseException e) {
+            // Client sent invalid data (bad dates, invalid values, etc.)
+            System.err.println("Invalid game data: " + e.getMessage());
             return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            // Server error - database issues, service failures, etc.
+            System.err.println("Error adding game: " + e.getMessage());
+            return ResponseEntity.status(500).build();
         }
     }
 
@@ -140,7 +146,7 @@ public class GameController {
             if (updatedGame != null) {
                 return ResponseEntity.ok(updatedGame);
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(400).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -170,8 +176,15 @@ public class GameController {
                 return ResponseEntity.noContent().build();
             }
             return ResponseEntity.status(403).build(); // Forbidden or not found
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            // Client sent invalid data
+            System.err.println("Invalid delete request: " + e.getMessage());
             return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            // Server error - database issues, service failures, etc.
+            System.err.println("Error deleting game: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
 }
