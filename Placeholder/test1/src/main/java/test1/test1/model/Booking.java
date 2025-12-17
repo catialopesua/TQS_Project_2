@@ -28,7 +28,12 @@ public class Booking {
     @Column(nullable = false)
     private double totalPrice;
 
-    protected Booking() {}
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
+    private String status = "PENDING"; // PENDING, APPROVED, DECLINED
+
+    protected Booking() {
+        this.status = "PENDING";
+    }
 
     public Booking(User user, Game game, LocalDate startDate, LocalDate endDate, double totalPrice) {
         this.user = user;
@@ -36,6 +41,7 @@ public class Booking {
         this.startDate = startDate;
         this.endDate = endDate;
         this.totalPrice = totalPrice;
+        this.status = "PENDING";
     }
 
     public Integer getBookingId() {
@@ -84,6 +90,14 @@ public class Booking {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
     
 }

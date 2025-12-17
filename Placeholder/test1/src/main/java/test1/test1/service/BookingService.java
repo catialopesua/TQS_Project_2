@@ -61,4 +61,17 @@ public class BookingService {
     public List<Booking> getBookingsByUser(Integer userId) {
         return bookingRepository.findByUserUserId(userId);
     }
+
+    public List<Booking> getBookingsByOwner(String ownerUsername) {
+        return bookingRepository.findByGameOwnerUsername(ownerUsername);
+    }
+
+    public Booking updateBookingStatus(Integer bookingId, String status) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+        if (booking != null) {
+            booking.setStatus(status);
+            return bookingRepository.save(booking);
+        }
+        return null;
+    }
 }

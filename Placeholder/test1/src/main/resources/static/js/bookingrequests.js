@@ -1,484 +1,382 @@
-/* ========================
-   BOOKING REQUESTS JAVASCRIPT
-   ======================== */
+/**
+ * Booking Requests Page Manager
+ */
 
-// Booking Requests Manager Class
 class BookingRequestsManager {
     constructor() {
-        this.requests = [];
-        this.filteredRequests = [];
-        this.currentFilter = 'all';
-        this.currentSort = 'newest';
-        this.searchQuery = '';
-        this.isLoading = false;
-
+        this.bookings = [];
+        this.filteredBookings = [];
+        this.currentFilter = 'pending';
+        this.currentUser = null;
+        this.elements = this.initializeElements();
         this.init();
     }
 
+    initializeElements() {
+        return {
+            requestsGrid: document.getElementById('requestsGrid'),
+            emptyState: document.getElementById('emptyState'),
+            loadingState: document.getElementById('loadingState'),
+            searchInput: document.getElementById('searchRequests'),
+            statusFilter: document.getElementById('statusFilter'),
+            totalRequests: document.getElementById('totalRequests'),
+            pendingRequests: document.getElementById('pendingRequests'),
+            approvedRequests: document.getElementById('approvedRequests'),
+            confirmModal: document.getElementById('confirmationModal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalMessage: document.getElementById('modal-message'),
+            modalIcon: document.getElementById('modal-icon'),
+            modalConfirm: document.getElementById('modal-confirm'),
+            modalCancel: document.getElementById('modal-cancel'),
+            signOutBtn: document.getElementById('sign-out-btn')
+        };
+    }
+
     async init() {
-        console.log('Initializing BookingRequestsManager...');
+        BitSwapUtils.init();
+        this.getCurrentUser();
 
-        // Initialize BitSwap utilities
-        if (window.BitSwapUtils) {
-            window.BitSwapUtils.init();
+        // Set current filter from dropdown value
+        if (this.elements.statusFilter) {
+            this.currentFilter = this.elements.statusFilter.value;
         }
 
-        // Set up event listeners
-        this.setupEventListeners();
-
-        // Update active nav item
-        this.updateActiveNav();
-
-        // Load initial data
-        await this.loadBookingRequests();
-
-        console.log('BookingRequestsManager initialized successfully');
+        await this.loadBookings();
+        this.bindEvents();
     }
 
-    setupEventListeners() {
-        // Search functionality
-        const searchInput = document.getElementById('searchRequests');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.searchQuery = e.target.value.toLowerCase();
-                this.filterAndDisplayRequests();
-            });
+    getCurrentUser() {
+        const userData = localStorage.getItem('bitswap_demo_user');
+        if (!userData) {
+            window.location.href = '/login';
+            return;
         }
-
-        // Filter dropdown
-        const filterSelect = document.getElementById('statusFilter');
-        if (filterSelect) {
-            filterSelect.addEventListener('change', (e) => {
-                this.currentFilter = e.target.value;
-                this.filterAndDisplayRequests();
-            });
-        }
-
-
-
-        // Modal close handlers
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                this.closeModal();
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeModal();
-            }
-        });
-
-        // Sign out button
-        const signOutBtn = document.getElementById('sign-out-btn');
-        if (signOutBtn) {
-            signOutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('bitswap_demo_user');
-                window.location.href = '/login';
-            });
-        }
+        this.currentUser = JSON.parse(userData);
     }
 
-    updateActiveNav() {
-        // Remove active class from all nav links
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-
-        // Add active class to current page link if it exists
-        const currentLink = document.querySelector('.nav-link[href="bookingrequests.html"]');
-        if (currentLink) {
-            currentLink.classList.add('active');
-        }
-    }
-
-    async loadBookingRequests() {
+    async loadBookings() {
         try {
-            // Mock data - in real app, this would come from your backend
-            this.requests = this.generateMockRequests();
-            this.filteredRequests = [...this.requests];
+            this.showLoading();
 
+            const response = await fetch(`/bookings/owner/${this.currentUser.username}`);
+            if (!response.ok) {
+                throw new Error('Failed to load bookings');
+            }
+
+            this.bookings = await response.json();
+            console.log('Loaded bookings:', this.bookings);
+            console.log('Booking statuses:', this.bookings.map(b => ({ id: b.bookingId, status: b.status })));
+            this.filterBookings();
             this.updateStats();
-            this.filterAndDisplayRequests();
+            this.renderBookings();
 
         } catch (error) {
-            console.error('Error loading booking requests:', error);
-            this.showToast('Failed to load booking requests', 'error');
+            console.error('Error loading bookings:', error);
+            this.showError('Failed to load booking requests');
         }
     }
 
-    generateMockRequests() {
-        const games = [
-            { title: 'Cyberpunk 2077', thumbnail: 'assets/game1.jpg' },
-            { title: 'The Witcher 3', thumbnail: 'assets/game2.jpg' },
-            { title: 'Call of Duty: MW3', thumbnail: 'assets/game3.jpg' },
-            { title: 'FIFA 24', thumbnail: 'assets/game4.jpg' },
-            { title: 'Grand Theft Auto V', thumbnail: 'assets/game5.jpg' },
-            { title: 'Red Dead Redemption 2', thumbnail: 'assets/game6.jpg' }
-        ];
+    filterBookings() {
+        const searchTerm = this.elements.searchInput?.value?.toLowerCase() || '';
+        const status = this.currentFilter;
 
-        const renters = [
-            { name: 'Alex Johnson', rating: 4.8, reviews: 15 },
-            { name: 'Sarah Wilson', rating: 4.9, reviews: 23 },
-            { name: 'Mike Chen', rating: 4.5, reviews: 8 },
-            { name: 'Emma Davis', rating: 4.7, reviews: 12 },
-            { name: 'David Brown', rating: 4.6, reviews: 19 },
-            { name: 'Lisa Garcia', rating: 4.9, reviews: 31 }
-        ];
+        this.filteredBookings = this.bookings.filter(booking => {
+            // Handle null/undefined status by defaulting to 'PENDING'
+            const bookingStatus = booking.status || 'PENDING';
 
-        const statuses = ['pending', 'pending', 'pending', 'approved', 'declined'];
+            const matchesSearch = !searchTerm ||
+                booking.game.title.toLowerCase().includes(searchTerm) ||
+                booking.user.username.toLowerCase().includes(searchTerm);
 
-        return Array.from({ length: 12 }, (_, i) => {
-            const game = games[i % games.length];
-            const renter = renters[i % renters.length];
-            const status = statuses[i % statuses.length];
-            const requestDate = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000);
-            const startDate = new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000);
-            const duration = Math.floor(Math.random() * 14) + 1;
-            const endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000);
+            const matchesStatus = status === 'all' || bookingStatus === status.toUpperCase();
 
-            return {
-                id: `req-${i + 1}`,
-                gameTitle: game.title,
-                gameThumbnail: game.thumbnail,
-                renterName: renter.name,
-                renterRating: renter.rating,
-                renterReviews: renter.reviews,
-                status: status,
-                requestDate: requestDate,
-                startDate: startDate,
-                endDate: endDate,
-                duration: duration,
-                totalPrice: Math.floor(Math.random() * 50) + 15,
-                message: 'Looking forward to playing this game! I take great care of borrowed items and will return on time.'
-            };
-        });
-    }
-
-    filterAndDisplayRequests() {
-        // Apply filters
-        this.filteredRequests = this.requests.filter(request => {
-            // Status filter
-            if (this.currentFilter !== 'all' && request.status !== this.currentFilter) {
-                return false;
-            }
-
-            // Search filter
-            if (this.searchQuery) {
-                const searchableText = `${request.gameTitle} ${request.renterName}`.toLowerCase();
-                if (!searchableText.includes(this.searchQuery)) {
-                    return false;
-                }
-            }
-
-            return true;
+            return matchesSearch && matchesStatus;
         });
 
-        // Display results
-        this.displayRequests();
-        this.updateStats();
+        console.log('Filter status:', status);
+        console.log('Filtered bookings:', this.filteredBookings.length, 'out of', this.bookings.length);
     }
 
+    updateStats() {
+        const total = this.bookings.length;
+        // Handle null/undefined status by defaulting to 'PENDING'
+        const pending = this.bookings.filter(b => (b.status || 'PENDING') === 'PENDING').length;
+        const approved = this.bookings.filter(b => b.status === 'APPROVED').length;
 
+        this.elements.totalRequests.textContent = total;
+        this.elements.pendingRequests.textContent = pending;
+        this.elements.approvedRequests.textContent = approved;
+    }
 
-    displayRequests() {
-        const container = document.getElementById('requestsGrid');
-        const emptyState = document.getElementById('emptyState');
+    renderBookings() {
+        this.hideLoading();
 
-        if (!container) return;
-
-        // Clear existing content
-        container.innerHTML = '';
-
-        // Show empty state if no requests
-        if (this.filteredRequests.length === 0) {
-            if (emptyState) {
-                emptyState.style.display = 'block';
-            }
+        if (this.filteredBookings.length === 0) {
+            this.elements.requestsGrid.style.display = 'none';
+            this.elements.emptyState.style.display = 'flex';
             return;
         }
 
-        // Hide empty state
-        if (emptyState) {
-            emptyState.style.display = 'none';
-        }
+        this.elements.emptyState.style.display = 'none';
+        this.elements.requestsGrid.style.display = 'grid';
+        this.elements.requestsGrid.innerHTML = '';
 
-        // Create request cards
-        this.filteredRequests.forEach((request, index) => {
-            const card = this.createRequestCard(request, index);
-            container.appendChild(card);
-        });
-
-        // Add fade-in animation
-        container.querySelectorAll('.request-card').forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('fade-in');
-            }, index * 100);
+        this.filteredBookings.forEach(booking => {
+            const card = this.createBookingCard(booking);
+            this.elements.requestsGrid.appendChild(card);
         });
     }
 
-    createRequestCard(request, index) {
+    createBookingCard(booking) {
         const card = document.createElement('div');
         card.className = 'request-card';
+        card.dataset.bookingId = booking.bookingId;
+
+        const startDate = new Date(booking.startDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        const endDate = new Date(booking.endDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        // Get first photo if available
+        const gamePhoto = booking.game.photos && booking.game.photos.trim() !== ''
+            ? booking.game.photos.split(',')[0].trim()
+            : '/images/placeholder.png';
+
+        // Get first letter of username for avatar
+        const avatarLetter = booking.user.username.charAt(0).toUpperCase();
+
         card.innerHTML = `
             <div class="card-header">
-                <img src="${request.gameThumbnail}" alt="${request.gameTitle}" class="game-thumbnail" 
-                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMWExYTFhIi8+Cjxwb2x5Z29uIHBvaW50cz0iMzIsMjQgNDgsMzIgNDgsNDggMzIsNTYgMjQsNDggMjQsMzIiIGZpbGw9IiM0YWUwZmYiLz4KPC9zdmc+'">
+                <img src="${gamePhoto}" alt="${booking.game.title}" class="game-thumbnail" 
+                     onerror="this.src='/images/placeholder.png'">
                 <div class="card-info">
-                    <h4 class="game-title">${request.gameTitle}</h4>
-                    <span class="request-status ${request.status}">${request.status}</span>
+                    <h3 class="game-title">${booking.game.title}</h3>
+                    <span class="request-status ${booking.status.toLowerCase()}">${this.getStatusText(booking.status)}</span>
                 </div>
             </div>
-            
+
             <div class="renter-info">
-                <div class="renter-avatar">${request.renterName.charAt(0)}</div>
+                <div class="renter-avatar">${avatarLetter}</div>
                 <div class="renter-details">
-                    <div class="renter-name">${request.renterName}</div>
-                    <div class="renter-rating">
-                        <span class="rating-stars">★</span>
-                        ${request.renterRating} (${request.renterReviews} reviews)
-                    </div>
+                    <div class="renter-name">${booking.user.username}</div>
                 </div>
             </div>
-            
+
             <div class="card-details">
                 <div class="detail-row">
-                    <span class="detail-label">Requested:</span>
-                    <span class="detail-value">${this.formatDate(request.requestDate)}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Duration:</span>
-                    <span class="detail-value">${request.duration} day${request.duration > 1 ? 's' : ''}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Total Amount:</span>
-                    <span class="detail-value">€${request.totalPrice}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Rental Period:</span>
+                    <span class="detail-label">Dates:</span>
                     <div class="rental-dates">
-                        ${this.formatDate(request.startDate)}
+                        <span>${startDate}</span>
                         <span class="date-arrow">→</span>
-                        ${this.formatDate(request.endDate)}
+                        <span>${endDate}</span>
                     </div>
                 </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total Price:</span>
+                    <span class="detail-value highlight">$${booking.totalPrice.toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Daily Rate:</span>
+                    <span class="detail-value">$${booking.game.pricePerDay.toFixed(2)}/day</span>
+                </div>
             </div>
-            
-            ${request.status === 'pending' ? this.createActionButtons(request.id) : ''}
+
+            ${this.getActionButtons(booking)}
         `;
 
         return card;
     }
 
-    createActionButtons(requestId) {
-        return `
-            <div class="card-actions">
-                <button class="action-btn approve-btn" onclick="bookingManager.approveRequest('${requestId}')">
-                    <span class="btn-loader"></span>
-                    <span class="btn-text">Approve</span>
-                </button>
-                <button class="action-btn decline-btn" onclick="bookingManager.declineRequest('${requestId}')">
-                    <span class="btn-loader"></span>
-                    <span class="btn-text">Decline</span>
-                </button>
-            </div>
-        `;
+    getStatusText(status) {
+        const statusMap = {
+            'PENDING': 'Pending Review',
+            'APPROVED': 'Approved',
+            'DECLINED': 'Declined'
+        };
+        return statusMap[status] || status;
     }
 
-    async approveRequest(requestId) {
-        const request = this.requests.find(r => r.id === requestId);
-        if (!request) return;
-
-        const success = await this.showConfirmationModal(
-            'approve',
-            `Approve rental request for "${request.gameTitle}"?`,
-            `This will confirm the booking from ${this.formatDate(request.startDate)} to ${this.formatDate(request.endDate)}.`
-        );
-
-        if (success) {
-            await this.updateRequestStatus(requestId, 'approved');
-            this.showToast(`Rental request for "${request.gameTitle}" has been approved!`, 'success');
+    getActionButtons(booking) {
+        if (booking.status === 'PENDING') {
+            return `
+                <div class="card-actions">
+                    <button class="action-btn approve-btn" data-action="approve" data-booking-id="${booking.bookingId}">
+                        <span class="btn-text">Approve</span>
+                    </button>
+                    <button class="action-btn decline-btn" data-action="decline" data-booking-id="${booking.bookingId}">
+                        <span class="btn-text">Decline</span>
+                    </button>
+                </div>
+            `;
+        } else if (booking.status === 'APPROVED') {
+            return `
+                <div class="card-actions">
+                    <div style="text-align: center; padding: var(--space-md); color: var(--accent-tertiary); font-weight: 600;">
+                        This booking has been approved
+                    </div>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="card-actions">
+                    <div style="text-align: center; padding: var(--space-md); color: var(--accent-secondary); font-weight: 600;">
+                        This booking has been declined
+                    </div>
+                </div>
+            `;
         }
     }
 
-    async declineRequest(requestId) {
-        const request = this.requests.find(r => r.id === requestId);
-        if (!request) return;
+    bindEvents() {
+        // Search
+        this.elements.searchInput?.addEventListener('input', () => {
+            this.filterBookings();
+            this.renderBookings();
+        });
 
-        const success = await this.showConfirmationModal(
-            'decline',
-            `Decline rental request for "${request.gameTitle}"?`,
-            'This action cannot be undone. The renter will be notified.'
-        );
+        // Status filter
+        this.elements.statusFilter?.addEventListener('change', (e) => {
+            this.currentFilter = e.target.value;
+            this.filterBookings();
+            this.renderBookings();
+        });
 
-        if (success) {
-            await this.updateRequestStatus(requestId, 'declined');
-            this.showToast(`Rental request for "${request.gameTitle}" has been declined.`, 'error');
-        }
-    }
+        // Action buttons (using event delegation)
+        this.elements.requestsGrid?.addEventListener('click', (e) => {
+            const button = e.target.closest('[data-action]');
+            if (!button) return;
 
-    async updateRequestStatus(requestId, newStatus) {
-        // Find and update the request
-        const requestIndex = this.requests.findIndex(r => r.id === requestId);
-        if (requestIndex === -1) return;
+            const action = button.dataset.action;
+            const bookingId = parseInt(button.dataset.bookingId);
 
-        // Show loading on the specific buttons
-        const card = document.querySelector(`[onclick*="${requestId}"]`)?.closest('.request-card');
-        if (card) {
-            const buttons = card.querySelectorAll('.action-btn');
-            buttons.forEach(btn => {
-                btn.classList.add('loading');
-                btn.disabled = true;
-            });
-        }
+            if (action === 'approve') {
+                this.showConfirmModal('Approve Booking',
+                    'Are you sure you want to approve this booking request?',
+                    () => this.updateBookingStatus(bookingId, 'APPROVED'));
+            } else if (action === 'decline') {
+                this.showConfirmModal('Decline Booking',
+                    'Are you sure you want to decline this booking request?',
+                    () => this.updateBookingStatus(bookingId, 'DECLINED'));
+            }
+        });
 
-        try {
-            // Simulate API call
-            await this.delay(1000);
+        // Modal buttons
+        this.elements.modalCancel?.addEventListener('click', () => {
+            this.hideConfirmModal();
+        });
 
-            // Update the request
-            this.requests[requestIndex].status = newStatus;
-
-            // Refresh display
-            this.filterAndDisplayRequests();
-
-        } catch (error) {
-            console.error('Error updating request status:', error);
-            this.showToast('Failed to update request status', 'error');
-        }
-    }
-
-    showConfirmationModal(action, title, message) {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('confirmationModal');
-            const modalIcon = modal.querySelector('.modal-icon');
-            const modalTitle = modal.querySelector('h3');
-            const modalMessage = modal.querySelector('p');
-            const confirmBtn = modal.querySelector('.btn-primary');
-            const cancelBtn = modal.querySelector('.btn-secondary');
-
-            // Set modal content
-            modalIcon.textContent = action === 'approve' ? '✓' : '✕';
-            modalIcon.style.color = action === 'approve' ? 'var(--success)' : 'var(--error)';
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
-
-            confirmBtn.textContent = action === 'approve' ? 'Approve' : 'Decline';
-            confirmBtn.className = `btn ${action === 'approve' ? 'btn-primary' : 'btn-danger'}`;
-
-            // Show modal
-            modal.style.display = 'flex';
-
-            // Set up event handlers
-            const handleConfirm = () => {
-                this.closeModal();
-                resolve(true);
-            };
-
-            const handleCancel = () => {
-                this.closeModal();
-                resolve(false);
-            };
-
-            // Remove existing listeners
-            confirmBtn.onclick = null;
-            cancelBtn.onclick = null;
-
-            // Add new listeners
-            confirmBtn.onclick = handleConfirm;
-            cancelBtn.onclick = handleCancel;
+        // Sign out
+        this.elements.signOutBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('bitswap_demo_user');
+            window.location.href = '/login';
         });
     }
 
-    closeModal() {
-        const modal = document.getElementById('confirmationModal');
-        if (modal) {
-            modal.style.display = 'none';
+    async updateBookingStatus(bookingId, status) {
+        try {
+            this.hideConfirmModal();
+
+            console.log('Updating booking:', bookingId, 'to status:', status);
+
+            const response = await fetch(`/bookings/${bookingId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+            });
+
+            console.log('Response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+                console.error('Error response:', errorData);
+                throw new Error(errorData.message || 'Failed to update booking status');
+            }
+
+            const updatedBooking = await response.json();
+            console.log('Updated booking:', updatedBooking);
+
+            // Update local data
+            const index = this.bookings.findIndex(b => b.bookingId === bookingId);
+            if (index !== -1) {
+                this.bookings[index] = updatedBooking;
+            }
+
+            this.filterBookings();
+            this.updateStats();
+            this.renderBookings();
+
+            this.showToast(`Booking ${status.toLowerCase()} successfully!`, 'success');
+
+        } catch (error) {
+            console.error('Error updating booking status:', error);
+            this.showToast(error.message || 'Failed to update booking status', 'error');
         }
     }
 
-    updateStats() {
-        const totalCount = document.getElementById('totalRequests');
-        const pendingCount = document.getElementById('pendingRequests');
-        const approvedCount = document.getElementById('approvedRequests');
+    showConfirmModal(title, message, onConfirm) {
+        this.elements.modalTitle.textContent = title;
+        this.elements.modalMessage.textContent = message;
+        this.elements.confirmModal.style.display = 'flex';
 
-        if (totalCount) {
-            totalCount.textContent = this.requests.length;
-        }
+        // Remove previous listeners
+        const newConfirmBtn = this.elements.modalConfirm.cloneNode(true);
+        this.elements.modalConfirm.parentNode.replaceChild(newConfirmBtn, this.elements.modalConfirm);
+        this.elements.modalConfirm = newConfirmBtn;
 
-        if (pendingCount) {
-            const pending = this.requests.filter(r => r.status === 'pending').length;
-            pendingCount.textContent = pending;
-        }
+        this.elements.modalConfirm.addEventListener('click', () => {
+            onConfirm();
+        });
+    }
 
-        if (approvedCount) {
-            const approved = this.requests.filter(r => r.status === 'approved').length;
-            approvedCount.textContent = approved;
-        }
+    hideConfirmModal() {
+        this.elements.confirmModal.style.display = 'none';
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+
+        const container = document.getElementById('toastContainer');
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     showLoading() {
-        this.isLoading = true;
-        const loadingState = document.getElementById('loadingState');
-        const requestsGrid = document.getElementById('requestsGrid');
-        const emptyState = document.getElementById('emptyState');
-
-        if (loadingState) loadingState.style.display = 'flex';
-        if (requestsGrid) requestsGrid.style.display = 'none';
-        if (emptyState) emptyState.style.display = 'none';
+        this.elements.loadingState.style.display = 'flex';
+        this.elements.requestsGrid.style.display = 'none';
+        this.elements.emptyState.style.display = 'none';
     }
 
     hideLoading() {
-        this.isLoading = false;
-        const loadingState = document.getElementById('loadingState');
-        const requestsGrid = document.getElementById('requestsGrid');
-
-        if (loadingState) loadingState.style.display = 'none';
-        if (requestsGrid) requestsGrid.style.display = 'grid';
+        this.elements.loadingState.style.display = 'none';
     }
 
-    showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-            <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
-            <span>${message}</span>
-        `;
-
-        const container = document.getElementById('toastContainer');
-        if (container) {
-            container.appendChild(toast);
-
-            // Show toast
-            setTimeout(() => toast.classList.add('show'), 100);
-
-            // Auto-remove after 4 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-    }
-
-    formatDate(date) {
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    }
-
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    showError(message) {
+        this.hideLoading();
+        this.showToast(message, 'error');
     }
 }
 
-// Initialize when DOM is loaded
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    window.bookingManager = new BookingRequestsManager();
+    new BookingRequestsManager();
 });
-
-// Export for global access
-window.BookingRequestsManager = BookingRequestsManager;

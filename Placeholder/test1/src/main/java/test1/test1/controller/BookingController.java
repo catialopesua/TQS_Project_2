@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -150,6 +151,45 @@ public class BookingController {
         } catch (Exception e) {
             return ResponseEntity.status(500)
                 .body(Map.of("message", "Error retrieving booking: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/owner/{ownerUsername}")
+    public ResponseEntity<List<Booking>> getBookingsByOwner(@PathVariable String ownerUsername) {
+        try {
+            List<Booking> bookings = bookingService.getBookingsByOwner(ownerUsername);
+            return ResponseEntity.ok(bookings);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    @PutMapping("/{bookingId}/status")
+    public ResponseEntity<?> updateBookingStatus(@PathVariable Integer bookingId, @RequestBody Map<String, String> request) {
+        try {
+            System.out.println("Received request to update booking " + bookingId);
+            System.out.println("Request body: " + request);
+            
+            String status = request.get("status");
+            System.out.println("Status: " + status);
+            
+            if (status == null || (!status.equals("APPROVED") && !status.equals("DECLINED"))) {
+                System.out.println("Invalid status: " + status);
+                return ResponseEntity.badRequest().body(Map.of("message", "Invalid status"));
+            }
+
+            Booking booking = bookingService.updateBookingStatus(bookingId, status);
+            if (booking == null) {
+                System.out.println("Booking not found: " + bookingId);
+                return ResponseEntity.status(404).body(Map.of("message", "Booking not found"));
+            }
+
+            System.out.println("Successfully updated booking to status: " + booking.getStatus());
+            return ResponseEntity.ok(booking);
+        } catch (Exception e) {
+            System.err.println("Error updating booking status:");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "Failed to update booking status: " + e.getMessage()));
         }
     }
 }
