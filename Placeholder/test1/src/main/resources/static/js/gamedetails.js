@@ -297,6 +297,23 @@ class GameDetails {
             });
         }
 
+        // Booking close button
+        const bookingCloseBtn = document.getElementById('booking-close-btn');
+        if (bookingCloseBtn) {
+            bookingCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeBookingModal();
+            });
+        }
+
+        // Price calculation on date change
+        if (this.elements.bookingStart) {
+            this.elements.bookingStart.addEventListener('change', () => this.calculateBookingPrice());
+        }
+        if (this.elements.bookingEnd) {
+            this.elements.bookingEnd.addEventListener('change', () => this.calculateBookingPrice());
+        }
+
         // Close modal when clicking backdrop
         if (this.elements.bookingModal) {
             this.elements.bookingModal.addEventListener('click', (e) => {
@@ -322,43 +339,73 @@ class GameDetails {
             return;
         }
 
-        // Navigate to rent page with game ID
-        window.location.href = `/rent?id=${this.gameId}`;
+        // Open booking modal to select dates
+        this.openBookingModal();
     }
 
     openBookingModal() {
         if (!this.elements.bookingModal) return;
 
-        // Show modal first (non-blocking)
-        this.elements.bookingError.style.display = 'none';
+        // Reset error messages
+        this.clearBookingError();
+
+        // Hide price summary initially
+        const priceSummary = document.getElementById('booking-price-summary');
+        if (priceSummary) {
+            priceSummary.style.display = 'none';
+        }
+
+        // Show modal with proper positioning
         this.elements.bookingModal.style.display = 'flex';
+        this.elements.bookingModal.style.position = 'fixed';
+        this.elements.bookingModal.style.inset = '0';
+        this.elements.bookingModal.style.alignItems = 'center';
+        this.elements.bookingModal.style.justifyContent = 'center';
+        this.elements.bookingModal.style.background = 'rgba(0, 0, 0, 0.7)';
+        this.elements.bookingModal.style.zIndex = '999';
+        this.elements.bookingModal.style.backdropFilter = 'blur(4px)';
 
-        // Defer date calculations to avoid blocking
-        requestAnimationFrame(() => {
-            // Prefill modal title
-            this.elements.modalGameTitle.textContent = this.gameData.title;
+        // Prefill modal title
+        this.elements.modalGameTitle.textContent = `Rent ${this.gameData.title}`;
 
-            // Prefill start/end with game's available dates or today
-            const today = new Date();
-            const minStart = this.gameData.startDate ? new Date(this.gameData.startDate) : today;
-            const maxEnd = this.gameData.endDate ? new Date(this.gameData.endDate) : null;
+        // Prefill start/end with game's available dates or today
+        const today = new Date();
+        const minStart = this.gameData.startDate ? new Date(this.gameData.startDate) : today;
+        const maxEnd = this.gameData.endDate ? new Date(this.gameData.endDate) : null;
 
-            const startStr = BitSwapUtils.formatDate(minStart);
-            this.elements.bookingStart.value = startStr;
-            this.elements.bookingStart.min = startStr;
+        const startStr = BitSwapUtils.formatDate(minStart);
+        this.elements.bookingStart.value = startStr;
+        this.elements.bookingStart.min = startStr;
 
-            if (maxEnd) {
-                this.elements.bookingEnd.min = startStr;
-                this.elements.bookingEnd.max = BitSwapUtils.formatDate(maxEnd);
-                this.elements.bookingEnd.value = BitSwapUtils.formatDate(new Date(minStart.getTime() + 24 * 60 * 60 * 1000));
-            } else {
-                // default end date is next day
-                const nextDay = new Date(minStart);
-                nextDay.setDate(minStart.getDate() + 1);
-                this.elements.bookingEnd.value = BitSwapUtils.formatDate(nextDay);
-                this.elements.bookingEnd.min = startStr;
-            }
-        });
+        if (maxEnd) {
+            this.elements.bookingEnd.min = startStr;
+            this.elements.bookingEnd.max = BitSwapUtils.formatDate(maxEnd);
+            this.elements.bookingEnd.value = BitSwapUtils.formatDate(new Date(minStart.getTime() + 24 * 60 * 60 * 1000));
+        } else {
+            // default end date is next day
+            const nextDay = new Date(minStart);
+            nextDay.setDate(minStart.getDate() + 1);
+            this.elements.bookingEnd.value = BitSwapUtils.formatDate(nextDay);
+            this.elements.bookingEnd.min = startStr;
+        }
+
+        // Trigger price calculation on load
+        this.calculateBookingPrice();
+    }
+
+    calculateBookingPrice() {
+        const start = this.elements.bookingStart.value;
+        const end = this.elements.bookingEnd.value;
+        
+        if (start && end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            const dailyRate = this.gameData.price || 9.99;
+            const totalPrice = daysCount > 0 ? daysCount * dailyRate : 0;
+            
+            this.updateBookingPriceSummary(dailyRate, daysCount, totalPrice);
+        }
     }
 
     closeBookingModal() {
@@ -367,6 +414,9 @@ class GameDetails {
     }
 
     async submitBooking() {
+        // Clear previous errors
+        this.clearBookingError();
+
         // Basic validation
         const start = this.elements.bookingStart.value;
         const end = this.elements.bookingEnd.value;
@@ -392,36 +442,54 @@ class GameDetails {
             return;
         }
 
-        // Send booking request to backend - use create by username endpoint
-        try {
-            const payload = {
-                username: username,
-                gameId: parseInt(this.gameId),
-                startDate: start,
-                endDate: end
-            };
+        // Calculate total price
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        const dailyRate = this.gameData.price || 9.99;
+        const totalPrice = daysCount * dailyRate;
 
-            const resp = await fetch('/bookings/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        // Update booking price summary
+        this.updateBookingPriceSummary(dailyRate, daysCount, totalPrice);
 
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                this.showBookingError(err.error || 'Failed to create booking.');
-                return;
-            }
+        // Store booking data for payment processing
+        this.currentBookingData = {
+            gameTitle: this.gameData.title,
+            startDate: start,
+            endDate: end,
+            totalPrice: totalPrice,
+            gameId: parseInt(this.gameId),
+            userId: user.userId,
+            username: username,
+            dailyRate: dailyRate,
+            daysCount: daysCount
+        };
 
-            const result = await resp.json();
-            // Show confirmation and close modal
-            alert(`Booking confirmed! Booking ID: ${result.bookingId} — Total: $${result.totalPrice.toFixed(2)}`);
-            this.closeBookingModal();
-            // Refresh page to update availability
-            window.location.reload();
-        } catch (e) {
-            console.error(e);
-            this.showBookingError('Failed to submit booking.');
+        // Close booking modal and open payment modal
+        this.closeBookingModal();
+        
+        // Initialize payment with booking data
+        if (typeof PaymentManager !== 'undefined') {
+            PaymentManager.initializePayment(this.currentBookingData);
+        } else {
+            this.showBookingError('Payment system not available. Please refresh and try again.');
+        }
+    }
+
+    updateBookingPriceSummary(dailyRate, daysCount, totalPrice) {
+        const priceSummary = document.getElementById('booking-price-summary');
+        if (priceSummary) {
+            document.getElementById('daily-rate').textContent = `$${dailyRate.toFixed(2)}`;
+            document.getElementById('days-count').textContent = daysCount;
+            document.getElementById('booking-total').textContent = `$${totalPrice.toFixed(2)}`;
+            priceSummary.style.display = 'block';
+        }
+    }
+
+    clearBookingError() {
+        if (this.elements.bookingError) {
+            this.elements.bookingError.style.display = 'none';
+            this.elements.bookingError.textContent = '';
         }
     }
 

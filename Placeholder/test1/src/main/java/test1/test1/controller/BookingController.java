@@ -137,4 +137,19 @@ public class BookingController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<?> getBookingById(@PathVariable Integer bookingId) {
+        try {
+            Optional<Booking> booking = bookingService.getBookingById(bookingId);
+            if (booking.isEmpty()) {
+                return ResponseEntity.status(404)
+                    .body(Map.of("message", "Booking not found"));
+            }
+            return ResponseEntity.ok(booking.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(Map.of("message", "Error retrieving booking: " + e.getMessage()));
+        }
+    }
 }

@@ -55,4 +55,9 @@ public class LoginController {
     public String rent() {
         return "rent";
     }
+
+    @GetMapping("/bookings/confirmation")
+    public String paymentConfirmation() {
+        return "paymentconfirmation";
+    }
 }

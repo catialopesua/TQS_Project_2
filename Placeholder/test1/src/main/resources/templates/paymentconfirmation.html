@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Payment Confirmation - BitSwap">
+    <title>Payment Confirmation - BitSwap</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/css/shared.css}">
+    <link rel="stylesheet" th:href="@{/css/paymentconfirmation.css}">
+</head>
+
+<body>
+    <!-- Background overlay -->
+    <div class="bg-overlay" aria-hidden="true"></div>
+
+    <!-- Fun background elements -->
+    <div class="particles" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo section -->
+            <div class="logo-section">
+                <img th:src="@{/images/applogo.png}" alt="BitSwap Logo" class="header-logo"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback small" style="display: none;">
+                    <span class="logo-text">BitSwap</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="main-nav" role="navigation">
+                <ul class="nav-list">
+                    <li><a th:href="@{/listings}" class="nav-link">Listings</a></li>
+                    <li><a href="#" class="nav-link">Renter Dashboard</a></li>
+                    <li><a th:href="@{/profile}" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <!-- User actions -->
+            <div class="header-actions">
+                <a th:href="@{/login}" class="header-btn secondary" id="sign-out-btn">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="confirmation-container">
+        <div class="confirmation-content">
+            <!-- Success Icon -->
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+
+            <!-- Confirmation Message -->
+            <h1 class="confirmation-title">Payment Successful!</h1>
+            <p class="confirmation-subtitle">Your booking has been confirmed and is now active.</p>
+
+            <!-- Booking Details Card -->
+            <div id="booking-details" class="details-card">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading booking details...</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a th:href="@{/listings}" class="btn btn-primary">
+                    Browse More Games
+                </a>
+                <a href="#" id="view-bookings-btn" class="btn btn-secondary">
+                    My Bookings
+                </a>
+            </div>
+
+            <!-- Error State (if booking loading fails) -->
+            <div id="error-state" class="error-card" style="display: none;">
+                <h2>Something went wrong</h2>
+                <p id="error-message">Unable to load booking details. Please contact support.</p>
+                <a th:href="@{/listings}" class="btn btn-primary">Back to Listings</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script th:src="@{/js/shared.js}"></script>
+    <script th:src="@{/js/paymentconfirmation.js}" defer></script>
+</body>
+
+</html>

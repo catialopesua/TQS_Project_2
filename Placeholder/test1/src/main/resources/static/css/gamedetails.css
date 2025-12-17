@@ -558,6 +558,356 @@
     }
 }
 
+/* ===== PAYMENT & BOOKING MODALS ===== */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--panel);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg), var(--glow-accent);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-size-2xl);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+    color: var(--accent);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: var(--space-lg);
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-top: 1px solid var(--border);
+}
+
+/* Booking Modal Specific */
+.booking-modal-content {
+    max-width: 450px;
+}
+
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-label {
+    display: block;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-base);
+    transition: var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(74, 224, 255, 0.2);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.price-summary {
+    background: linear-gradient(135deg, rgba(74, 224, 255, 0.1), rgba(87, 255, 138, 0.1));
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.price-row.total {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-md);
+    margin-top: var(--space-md);
+    color: var(--accent-tertiary);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+}
+
+/* Payment Modal Specific */
+.payment-modal-content {
+    max-width: 550px;
+}
+
+.payment-summary {
+    background: linear-gradient(135deg, rgba(74, 224, 255, 0.1), rgba(255, 77, 109, 0.1));
+    border: 1px solid var(--accent-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.summary-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.summary-value {
+    color: var(--text-primary);
+}
+
+.summary-item.highlight {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-md);
+    margin-top: var(--space-md);
+    font-size: var(--font-size-base);
+}
+
+.summary-value.amount {
+    color: var(--accent-tertiary);
+    font-weight: 700;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+}
+
+.section-title {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    margin: var(--space-lg) 0 var(--space-md) 0;
+    font-weight: 600;
+}
+
+.payment-methods {
+    margin-bottom: var(--space-lg);
+}
+
+.method-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.method-option {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.method-option:hover {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(74, 224, 255, 0.05), transparent);
+}
+
+.method-option input {
+    margin-right: var(--space-md);
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.method-option input:checked ~ .method-label {
+    color: var(--accent);
+}
+
+.method-option.active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(74, 224, 255, 0.1), transparent);
+}
+
+.method-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.method-icon {
+    font-size: var(--font-size-xl);
+}
+
+.payment-form {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.card-info,
+.paypal-info {
+    background: rgba(74, 224, 255, 0.05);
+    border-left: 3px solid var(--accent);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.card-info p,
+.paypal-info p {
+    margin: var(--space-xs) 0;
+    line-height: 1.4;
+}
+
+/* Alert Messages */
+.alert {
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    margin: var(--space-md) 0;
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.alert-error {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid var(--error);
+    color: #ff8a8a;
+}
+
+.alert-success {
+    background: rgba(81, 207, 102, 0.1);
+    border: 1px solid var(--success);
+    color: #6ff57e;
+}
+
+/* Loading spinner in button */
+.spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(74, 224, 255, 0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: calc(100% - var(--space-lg));
+    }
+
+    .payment-modal-content {
+        max-width: calc(100% - var(--space-lg));
+    }
+
+    .booking-modal-content {
+        max-width: calc(100% - var(--space-lg));
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
 @media (max-width: 480px) {
     .game-header {
         flex-direction: column;
@@ -565,5 +915,21 @@
 
     .game-title {
         font-size: var(--font-size-xl);
+    }
+
+    .modal-header {
+        padding: var(--space-md);
+    }
+
+    .modal-body {
+        padding: var(--space-md);
+    }
+
+    .modal-footer {
+        padding: var(--space-md);
+    }
+
+    .payment-summary {
+        padding: var(--space-md);
     }
 }
