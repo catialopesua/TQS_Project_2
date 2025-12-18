@@ -136,7 +136,7 @@ class GameDetails {
         // Status
         const statusClass = 'available';
         const statusText = 'Available for Booking';
-        
+
         // Check if game has available dates
         if (!this.gameData.startDate || !this.gameData.endDate) {
             this.elements.statusBadge.className = 'status-badge unavailable';
@@ -409,14 +409,14 @@ class GameDetails {
     calculateBookingPrice() {
         const start = this.elements.bookingStart.value;
         const end = this.elements.bookingEnd.value;
-        
+
         if (start && end) {
             const startDate = new Date(start);
             const endDate = new Date(end);
             const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
             const dailyRate = this.gameData.pricePerDay || 9.99;
             const totalPrice = daysCount > 0 ? daysCount * dailyRate : 0;
-            
+
             this.updateBookingPriceSummary(dailyRate, daysCount, totalPrice);
         }
     }
@@ -480,7 +480,7 @@ class GameDetails {
 
         // Close booking modal and open payment modal
         this.closeBookingModal();
-        
+
         // Initialize payment with booking data
         if (typeof PaymentManager !== 'undefined') {
             PaymentManager.initializePayment(this.currentBookingData);
