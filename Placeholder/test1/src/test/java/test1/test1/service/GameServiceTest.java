@@ -7,11 +7,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -117,7 +115,7 @@ class GameServiceTest {
 
         LocalDate startDate = LocalDate.of(2025, 12, 1);
         LocalDate endDate = LocalDate.of(2025, 12, 31);
-        Game result = gameService.updateGame(5, "New Title", "New Desc", 15.0, "excellent", "photo.jpg", "tag1", true, startDate, endDate);
+        Game result = gameService.updateGame(5, "New Title", "New Desc", null, 15.0, "excellent", "photo.jpg", "tag1", true, startDate, endDate);
 
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("New Title");
@@ -132,7 +130,7 @@ class GameServiceTest {
     void updateGame_gameNotFound() {
         when(gameRepository.findById(999)).thenReturn(Optional.empty());
 
-        Game result = gameService.updateGame(999, "Title", "Desc", 10.0, "good", "", "", true, null, null);
+        Game result = gameService.updateGame(999, "Title", "Desc", null, 10.0, "good", "", "", true, null, null);
 
         assertThat(result).isNull();
         verify(gameRepository).findById(999);
@@ -148,7 +146,7 @@ class GameServiceTest {
         when(gameRepository.findById(5)).thenReturn(Optional.of(existingGame));
         when(gameRepository.save(any(Game.class))).thenReturn(existingGame);
 
-        Game result = gameService.updateGame(5, "Title", "Desc", 10.0, "good", null, null, true, null, null);
+        Game result = gameService.updateGame(5, "Title", "Desc", null, 10.0, "good", null, null, true, null, null);
 
         assertThat(result).isNotNull();
         verify(gameRepository).findById(5);
