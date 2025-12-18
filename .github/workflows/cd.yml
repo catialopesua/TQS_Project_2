@@ -158,3 +158,26 @@ jobs:
 
           Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
 
+  k6-performance-test:
+    needs: deploy-to-server
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo apt update
+          sudo apt install -y gnupg ca-certificates
+          curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt update
+          sudo apt install -y k6
+
+      - name: Run k6 smoke test
+        env:
+          BASE_URL: http://${{ secrets.SERVER_HOST }}:${{ env.HOST_PORT }}
+        run: |
+          k6 run k6/smoke-test.js
