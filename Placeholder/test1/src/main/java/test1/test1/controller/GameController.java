@@ -134,6 +134,7 @@ public class GameController {
                 id,
                 request.getTitle(),
                 request.getDescription(),
+                request.getDeliveryInstructions(),
                 request.getPrice(),
                 request.getCondition(),
                 request.getPhotos(),

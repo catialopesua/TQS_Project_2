@@ -588,6 +588,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -796,7 +797,7 @@
     accent-color: var(--accent);
 }
 
-.method-option input:checked ~ .method-label {
+.method-option input:checked~.method-label {
     color: var(--accent);
 }
 
@@ -932,7 +933,8 @@
     .payment-summary {
         padding: var(--space-md);
     }
-}}
+}
+}
 
 
 /* ==========================================
@@ -1085,4 +1087,53 @@
     background: rgba(74, 224, 255, 0.15);
     color: var(--accent);
     border: 1px solid rgba(74, 224, 255, 0.3);
+}
+
+/* Description and Delivery Cards in Left Column */
+.game-description-card,
+.delivery-section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.game-description-card h3,
+.delivery-section-card h3 {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-md) 0;
+    font-weight: 600;
+}
+
+.game-description-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.delivery-section-card .delivery-info {
+    display: flex;
+    gap: var(--space-md);
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.delivery-section-card .delivery-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.delivery-section-card .delivery-info p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.rental-history-compact {
+    margin-top: var(--space-xl);
 }

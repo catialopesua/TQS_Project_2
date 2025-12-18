@@ -232,6 +232,7 @@ function openEditModal(gameId) {
     document.getElementById('edit-game-id').value = game.gameId;
     document.getElementById('edit-title').value = game.title;
     document.getElementById('edit-description').value = game.description;
+    document.getElementById('edit-delivery-instructions').value = game.deliveryInstructions || '';
     document.getElementById('edit-condition').value = game.condition;
     document.getElementById('edit-price').value = game.pricePerDay;
     document.getElementById('edit-active').checked = game.active;
@@ -341,6 +342,7 @@ async function saveEditedGame() {
         const gameData = {
             title: document.getElementById('edit-title').value.trim(),
             description: document.getElementById('edit-description').value.trim(),
+            deliveryInstructions: document.getElementById('edit-delivery-instructions').value.trim() || null,
             condition: document.getElementById('edit-condition').value,
             price: parseFloat(document.getElementById('edit-price').value),
             tags: document.getElementById('edit-tags').value,

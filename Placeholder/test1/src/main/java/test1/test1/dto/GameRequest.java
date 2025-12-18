@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class GameRequest {
     private String title;
     private String description;
+    private String deliveryInstructions;
     private Double price;
     private String condition;
     private String photos;
@@ -32,6 +33,14 @@ public class GameRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDeliveryInstructions() {
+        return deliveryInstructions;
+    }
+
+    public void setDeliveryInstructions(String deliveryInstructions) {
+        this.deliveryInstructions = deliveryInstructions;
     }
 
     public Double getPrice() {

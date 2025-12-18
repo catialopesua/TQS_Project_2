@@ -25,7 +25,6 @@ class GameDetails {
             statusBadge: document.getElementById('status-badge'),
             ownerName: document.getElementById('owner-name'),
             ownerInitial: document.getElementById('owner-initial'),
-            ownerRating: document.getElementById('owner-rating'),
             startDate: document.getElementById('start-date'),
             endDate: document.getElementById('end-date'),
             availabilitySection: document.getElementById('availability-section'),
@@ -133,6 +132,16 @@ class GameDetails {
         // Description
         this.elements.gameDescription.textContent = this.gameData.description || 'No description available.';
 
+        // Delivery Instructions
+        const deliverySection = document.getElementById('delivery-section');
+        const deliveryInstructions = document.getElementById('delivery-instructions');
+        if (this.gameData.deliveryInstructions && this.gameData.deliveryInstructions.trim() !== '') {
+            deliveryInstructions.textContent = this.gameData.deliveryInstructions;
+            deliverySection.style.display = 'block';
+        } else {
+            deliverySection.style.display = 'none';
+        }
+
         // Status
         const statusClass = 'available';
         const statusText = 'Available for Booking';
@@ -150,10 +159,6 @@ class GameDetails {
         const ownerUsername = this.gameData.ownerUsername || 'Unknown';
         this.elements.ownerName.textContent = ownerUsername;
         this.elements.ownerInitial.textContent = ownerUsername.charAt(0).toUpperCase();
-
-        // Owner rating (default 4.5 since backend doesn't have this)
-        const rating = 4.5;
-        this.displayRating(rating);
 
         // Availability calendar
         if (this.gameData.startDate && this.gameData.endDate) {
@@ -214,25 +219,6 @@ class GameDetails {
         // Update active thumbnail
         document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
         thumbnail.classList.add('active');
-    }
-
-    displayRating(rating) {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-        let starsHtml = '';
-
-        for (let i = 1; i <= 5; i++) {
-            if (i <= fullStars) {
-                starsHtml += '<span class="star">★</span>';
-            } else if (i === fullStars + 1 && hasHalfStar) {
-                starsHtml += '<span class="star">★</span>';
-            } else {
-                starsHtml += '<span class="star empty">☆</span>';
-            }
-        }
-
-        this.elements.ownerRating.querySelector('.stars').innerHTML = starsHtml;
-        this.elements.ownerRating.querySelector('.rating-text').textContent = `(${rating.toFixed(1)})`;
     }
 
     showLoading() {

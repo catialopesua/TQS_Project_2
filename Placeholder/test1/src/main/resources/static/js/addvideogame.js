@@ -55,6 +55,24 @@ function initFormHandlers() {
             }
         });
     }
+
+    // Character count for delivery instructions
+    const deliveryTextarea = document.getElementById('delivery-instructions');
+    const deliveryCount = document.getElementById('delivery-count');
+    if (deliveryTextarea && deliveryCount) {
+        deliveryTextarea.addEventListener('input', function () {
+            const count = this.value.length;
+            deliveryCount.textContent = count;
+
+            if (count > 900) {
+                deliveryCount.style.color = 'var(--color-danger)';
+            } else if (count > 800) {
+                deliveryCount.style.color = 'var(--color-warning)';
+            } else {
+                deliveryCount.style.color = 'var(--color-text-muted)';
+            }
+        });
+    }
 }
 
 async function handleFormSubmit(e) {
@@ -98,6 +116,7 @@ async function handleFormSubmit(e) {
         const formData = {
             title: document.getElementById('game-title').value.trim(),
             description: document.getElementById('game-description').value.trim(),
+            deliveryInstructions: document.getElementById('delivery-instructions').value.trim() || null,
             condition: document.getElementById('game-condition').value,
             photos: photoPaths.join(','), // Store comma-separated paths
             tags: tags, // Store comma-separated tags

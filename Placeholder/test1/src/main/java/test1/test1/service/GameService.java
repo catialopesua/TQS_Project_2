@@ -42,14 +42,15 @@ public class GameService {
         return gameRepository.findByOwnerUsername(ownerUsername);
     }
 
-    public Game updateGame(Integer id, String title, String description, double pricePerDay,
-                          String condition, String photos, String tags, boolean active,
+    public Game updateGame(Integer id, String title, String description, String deliveryInstructions,
+                          double pricePerDay, String condition, String photos, String tags, boolean active,
                           LocalDate startDate, LocalDate endDate) {
         Optional<Game> gameOpt = gameRepository.findById(id);
         if (gameOpt.isPresent()) {
             Game game = gameOpt.get();
             game.setTitle(title);
             game.setDescription(description);
+            game.setDeliveryInstructions(deliveryInstructions);
             game.setPricePerDay(pricePerDay);
             game.setCondition(condition);
             if (photos != null) game.setPhotos(photos);

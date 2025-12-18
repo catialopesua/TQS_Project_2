@@ -35,6 +35,9 @@ public class Game {
     @Column(length = 500)
     private String tags; // Stored as comma-separated tags (e.g., PlayStation,Action,Multiplayer)
 
+    @Column(length = 1000)
+    private String deliveryInstructions; // Delivery/handover instructions
+
     private boolean active = true;
 
     private LocalDate startDate;
@@ -137,6 +140,14 @@ public class Game {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public String getDeliveryInstructions() {
+        return deliveryInstructions;
+    }
+
+    public void setDeliveryInstructions(String deliveryInstructions) {
+        this.deliveryInstructions = deliveryInstructions;
     }
 
     public boolean isActive() {
