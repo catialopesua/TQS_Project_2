@@ -932,4 +932,157 @@
     .payment-summary {
         padding: var(--space-md);
     }
+}}
+
+
+/* ==========================================
+   COMPACT RENTAL HISTORY - LEFT COLUMN
+   ========================================== */
+
+.game-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.rental-history-compact {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+}
+
+.rental-history-compact .history-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-md) 0;
+    font-weight: 600;
+}
+
+/* Compact Loading State */
+.rental-history-compact .history-loading {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-md);
+}
+
+.rental-history-compact .spinner-small {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Compact Empty State */
+.rental-history-compact .history-empty {
+    padding: var(--space-md);
+    text-align: center;
+}
+
+.rental-history-compact .empty-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Rental List */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Compact Rental Item */
+.rental-item {
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(74, 224, 255, 0.03);
+    border: 1px solid rgba(74, 224, 255, 0.1);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    transition: var(--transition-fast);
+}
+
+.rental-item:hover {
+    background: rgba(74, 224, 255, 0.08);
+    border-color: rgba(74, 224, 255, 0.2);
+}
+
+.rental-item .renter {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.rental-item .dates {
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    display: block;
+    margin-top: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .history-list {
+        max-height: 300px;
+    }
+}
+
+/* Status Badge in Compact History */
+.rental-item .rental-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-left: 6px;
+}
+
+.rental-status-badge.pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.rental-status-badge.approved {
+    background: rgba(87, 255, 138, 0.15);
+    color: var(--accent-tertiary);
+    border: 1px solid rgba(87, 255, 138, 0.3);
+}
+
+.rental-status-badge.declined,
+.rental-status-badge.rejected {
+    background: rgba(255, 77, 109, 0.15);
+    color: var(--accent-secondary);
+    border: 1px solid rgba(255, 77, 109, 0.3);
+}
+
+.rental-status-badge.completed {
+    background: rgba(74, 224, 255, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(74, 224, 255, 0.3);
 }

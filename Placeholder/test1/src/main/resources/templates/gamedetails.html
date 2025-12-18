@@ -82,16 +82,39 @@
 
                 <!-- Game Content -->
                 <div id="game-content" style="display: none;">
-                    <!-- Image Gallery -->
-                    <div class="game-gallery">
-                        <div class="main-image">
-                            <img id="game-main-image" src="" alt="Game Image">
-                            <div class="image-placeholder" id="image-placeholder">
-                                <div class="placeholder-icon">🎮</div>
+                    <!-- Left Column -->
+                    <div class="game-left-column">
+                        <!-- Image Gallery -->
+                        <div class="game-gallery">
+                            <div class="main-image">
+                                <img id="game-main-image" src="" alt="Game Image">
+                                <div class="image-placeholder" id="image-placeholder">
+                                    <div class="placeholder-icon">🎮</div>
+                                </div>
+                            </div>
+                            <div class="thumbnail-strip" id="thumbnail-strip">
+                                <!-- Thumbnails will be inserted here -->
                             </div>
                         </div>
-                        <div class="thumbnail-strip" id="thumbnail-strip">
-                            <!-- Thumbnails will be inserted here -->
+
+                        <!-- Rental History Section -->
+                        <div class="rental-history-compact">
+                            <h3 class="history-title">Rental History</h3>
+                            
+                            <!-- Loading State -->
+                            <div id="history-loading" class="history-loading" style="display: none;">
+                                <div class="spinner-small"></div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div id="history-empty" class="history-empty" style="display: none;">
+                                <p class="empty-text">No rentals yet</p>
+                            </div>
+
+                            <!-- Rental List -->
+                            <div id="history-list" class="history-list">
+                                <!-- Rental items will be inserted here by JavaScript -->
+                            </div>
                         </div>
                     </div>
 

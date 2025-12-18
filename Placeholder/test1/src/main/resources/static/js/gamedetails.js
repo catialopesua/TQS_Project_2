@@ -45,7 +45,10 @@ class GameDetails {
             calendarTitle: document.getElementById('calendar-title'),
             calendarDays: document.getElementById('calendar-days'),
             prevMonth: document.getElementById('prev-month'),
-            nextMonth: document.getElementById('next-month')
+            nextMonth: document.getElementById('next-month'),
+            historyLoading: document.getElementById('history-loading'),
+            historyEmpty: document.getElementById('history-empty'),
+            historyList: document.getElementById('history-list')
         };
     }
 
@@ -86,6 +89,9 @@ class GameDetails {
             if (this.gameData.startDate && this.gameData.endDate) {
                 this.renderCalendar();
             }
+
+            // Load and display rental history
+            await this.loadRentalHistory();
 
             this.showContent();
         } catch (error) {
@@ -130,8 +136,15 @@ class GameDetails {
         // Status
         const statusClass = 'available';
         const statusText = 'Available for Booking';
-        this.elements.statusBadge.className = `status-badge ${statusClass}`;
-        this.elements.statusBadge.textContent = statusText;
+        
+        // Check if game has available dates
+        if (!this.gameData.startDate || !this.gameData.endDate) {
+            this.elements.statusBadge.className = 'status-badge unavailable';
+            this.elements.statusBadge.textContent = 'Unavailable';
+        } else {
+            this.elements.statusBadge.className = `status-badge ${statusClass}`;
+            this.elements.statusBadge.textContent = statusText;
+        }
 
         // Owner
         const ownerUsername = this.gameData.ownerUsername || 'Unknown';
@@ -592,6 +605,93 @@ class GameDetails {
             date.setHours(0, 0, 0, 0);
             return date >= start && date <= end;
         });
+    }
+
+    /**
+     * Load and display rental history for this game
+     */
+    async loadRentalHistory() {
+        if (!this.elements.historyLoading || !this.elements.historyEmpty || !this.elements.historyList) {
+            return;
+        }
+
+        try {
+            // Show loading state
+            this.elements.historyLoading.style.display = 'flex';
+            this.elements.historyEmpty.style.display = 'none';
+            this.elements.historyList.style.display = 'none';
+
+            // Fetch rental history for this game
+            const response = await fetch(`/bookings/game/${this.gameId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load rental history');
+            }
+
+            const rentalHistory = await response.json();
+
+            // Hide loading state
+            this.elements.historyLoading.style.display = 'none';
+
+            // Show empty state or rental items
+            if (!rentalHistory || rentalHistory.length === 0) {
+                this.elements.historyEmpty.style.display = 'block';
+            } else {
+                this.displayRentalHistory(rentalHistory);
+                this.elements.historyList.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error loading rental history:', error);
+            this.elements.historyLoading.style.display = 'none';
+            this.elements.historyEmpty.style.display = 'block';
+        }
+    }
+
+    /**
+     * Display rental history items (compact format)
+     */
+    displayRentalHistory(rentalHistory) {
+        this.elements.historyList.innerHTML = '';
+
+        rentalHistory.forEach(booking => {
+            const item = this.createRentalItem(booking);
+            this.elements.historyList.appendChild(item);
+        });
+    }
+
+    /**
+     * Create a compact rental history item
+     */
+    createRentalItem(booking) {
+        const item = document.createElement('div');
+        item.className = 'rental-item';
+
+        // Format dates
+        const startDate = new Date(booking.startDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+        const endDate = new Date(booking.endDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+        // Get renter info
+        const renterName = booking.user?.username || 'A user';
+
+        // Get status
+        const status = booking.status || 'pending';
+        const statusClass = status.toLowerCase();
+
+        item.innerHTML = `
+            <div>
+                <span class="renter">${renterName}</span> rented
+                <span class="rental-status-badge ${statusClass}">${status}</span>
+            </div>
+            <span class="dates">${startDate} - ${endDate}</span>
+        `;
+
+        return item;
     }
 }
 
