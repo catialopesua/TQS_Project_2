@@ -18,6 +18,7 @@ on:
 
 env:
   BASE_URL: http://${{ secrets.SERVER_HOST }}:80
+  K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
 
 jobs:
   k6-performance:
@@ -37,9 +38,9 @@ jobs:
       - name: Select test
         run: |
           if [ "${{ github.event.inputs.test_type }}" = "soak" ]; then
-            k6 run k6/soak-test.js
+            k6 cloud k6/soak-test.js
           elif [ "${{ github.event.inputs.test_type }}" = "smoke" ]; then
-            k6 run k6/smoke-test.js
+            k6 cloud k6/smoke-test.js
           else
-            k6 run k6/stress-test.js
+            k6 cloud k6/stress-test.js
           fi
