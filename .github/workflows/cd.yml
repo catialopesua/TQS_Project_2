@@ -65,99 +65,107 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-deploy-to-server:
-  needs: build-and-push
-  runs-on: [self-hosted]  # Windows runner with VPN access
-  if: success()  # Only run if build succeeded
+  deploy-to-server:
+    needs: build-and-push
+    runs-on: [self-hosted]  # Use self-hosted runner with VPN access
+    if: success()  # Only run if build succeeded
 
-  steps:
-    - name: Create deploy script
-      shell: pwsh
-      env:
-        REGISTRY: ${{ env.REGISTRY }}
-        IMAGE_NAME: ${{ env.IMAGE_NAME }}
-        CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
-        APP_PORT: ${{ env.APP_PORT }}
-        HOST_PORT: ${{ env.HOST_PORT }}
-      run: |
-        $lines = @(
-          'set -e',
-          'echo "Pulling latest image..."',
-          'docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest',
-          'echo "Stopping and removing old container..."',
-          'docker stop ${{ env.CONTAINER_NAME }} || true',
-          'docker rm ${{ env.CONTAINER_NAME }} || true',
-          'echo "Starting new container..."',
-          'docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.HOST_PORT }}:${{ env.APP_PORT }} --restart unless-stopped --health-interval=30s --health-timeout=3s --health-retries=3 --health-start-period=40s ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest',
-          'echo "Waiting for app to be healthy..."',
-          'max_attempts=30',
-          'attempt=0',
-          'while [ $attempt -lt $max_attempts ]; do',
-          '  if docker inspect --format=''{{.State.Health.Status}}'' ${{ env.CONTAINER_NAME }} | grep -q "healthy"; then',
-          '    echo "✓ App is healthy!"',
-          '    exit 0',
-          '  fi',
-          '  attempt=$((attempt + 1))',
-          '  echo "Attempt $attempt/$max_attempts: Waiting for app to be ready..."',
-          '  sleep 2',
-          'done',
-          'echo "✗ App failed to become healthy!"',
-          'docker logs ${{ env.CONTAINER_NAME }}',
-          'docker stop ${{ env.CONTAINER_NAME }}',
-          'exit 1'
-        )
-        $script = $lines -join "`n"
-        $deployPath = Join-Path $env:RUNNER_TEMP 'deploy.sh'
-        New-Item -ItemType Directory -Force -Path (Split-Path $deployPath) | Out-Null
-        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-        [System.IO.File]::WriteAllText($deployPath, $script, $utf8NoBom)
+    steps:
+      - name: Create deploy script
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+          APP_PORT: ${{ env.APP_PORT }}
+          HOST_PORT: ${{ env.HOST_PORT }}
+        run: |
+          $lines = @(
+            'set -e',
+            'echo "Pulling latest image..."',
+            'docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest',
+            'echo "Stopping and removing old container..."',
+            'docker stop ${{ env.CONTAINER_NAME }} || true',
+            'docker rm ${{ env.CONTAINER_NAME }} || true',
+            'echo "Starting new container..."',
+            'docker run -d --name ${{ env.CONTAINER_NAME }} -p ${{ env.HOST_PORT }}:${{ env.APP_PORT }} --restart unless-stopped --health-interval=30s --health-timeout=3s --health-retries=3 --health-start-period=40s ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest',
+            'echo "Waiting for app to be healthy..."',
+            'max_attempts=30',
+            'attempt=0',
+            'while [ $attempt -lt $max_attempts ]; do',
+            '  if docker inspect --format=''{{.State.Health.Status}}'' ${{ env.CONTAINER_NAME }} | grep -q "healthy"; then',
+            '    echo "✓ App is healthy!"',
+            '    exit 0',
+            '  fi',
+            '  attempt=$((attempt + 1))',
+            '  echo "Attempt $attempt/$max_attempts: Waiting for app to be ready..."',
+            '  sleep 2',
+            'done',
+            'echo "✗ App failed to become healthy!"',
+            'docker logs ${{ env.CONTAINER_NAME }}',
+            'docker stop ${{ env.CONTAINER_NAME }}',
+            'exit 1'
+          )
+          $script = $lines -join "`n"
+          $deployPath = Join-Path $env:RUNNER_TEMP 'deploy.sh'
+          New-Item -ItemType Directory -Force -Path (Split-Path $deployPath) | Out-Null
+          # Write without BOM, LF only
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [System.IO.File]::WriteAllText($deployPath, $script, $utf8NoBom)
 
-    - name: Deploy via SSH
-      shell: pwsh
-      env:
-        SERVER_HOST: ${{ secrets.SERVER_HOST }}
-        SERVER_USER: ${{ secrets.SERVER_USER }}
-        SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
-        REGISTRY: ${{ env.REGISTRY }}
-        IMAGE_NAME: ${{ env.IMAGE_NAME }}
-        CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
-        APP_PORT: ${{ env.APP_PORT }}
-        HOST_PORT: ${{ env.HOST_PORT }}
-      run: |
-        $keyPath = Join-Path $env:RUNNER_TEMP 'deploy_key.pem'
+      - name: Deploy via SSH
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+          APP_PORT: ${{ env.APP_PORT }}
+          HOST_PORT: ${{ env.HOST_PORT }}
+        run: |
+          $keyPath = Join-Path $env:RUNNER_TEMP 'deploy_key.pem'
 
-        # Write SSH key to RUNNER_TEMP only
-        $raw = $env:SERVER_SSH_KEY.Trim()
-        if ($raw.StartsWith('"') -and $raw.EndsWith('"')) { $raw = $raw.Trim('"') }
+          # Write SSH key
+          $raw = $env:SERVER_SSH_KEY.Trim()
+          if ($raw.StartsWith('"') -and $raw.EndsWith('"')) { $raw = $raw.Trim('"') }
 
-        try {
-          $bytes = [Convert]::FromBase64String($raw)
-          [IO.File]::WriteAllBytes($keyPath, $bytes)
-        } catch {
-          $normalized = $raw -replace "`r`n","`n"
-          [IO.File]::WriteAllText($keyPath, $normalized, [Text.Encoding]::ASCII)
-        }
+          try {
+            $bytes = [Convert]::FromBase64String($raw)
+            [IO.File]::WriteAllBytes($keyPath, $bytes)
+          } catch {
+            $normalized = $raw -replace "`r`n","`n"
+            [IO.File]::WriteAllText($keyPath, $normalized, [Text.Encoding]::ASCII)
+          }
 
-        icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
+          icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
 
-        $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
+          $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
 
-        # SSH connectivity test
-        ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok"
-        if ($LASTEXITCODE -ne 0) { Write-Error "SSH test failed"; exit 1 }
+          # SSH connectivity test
+          ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok"
+          if ($LASTEXITCODE -ne 0) { Write-Error "SSH test failed"; exit 1 }
 
-        # Pipe deploy.sh (from repo) to remote bash
-        $deployScript = Join-Path $env:GITHUB_WORKSPACE 'scripts\deploy.sh'
-        Get-Content $deployScript -Raw |
-          ssh -i $keyPath -o StrictHostKeyChecking=no `
-              $target `
-              "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT"
+          # Pipe deploy.sh (committed in repo) to remote bash
+          $deployScript = Join-Path $env:GITHUB_WORKSPACE 'scripts\deploy.sh'
+          Get-Content $deployScript -Raw |
+            ssh -i $keyPath -o StrictHostKeyChecking=no `
+                $target `
+                "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT"
 
-        if ($LASTEXITCODE -ne 0) { Write-Error "Deployment failed"; exit 1 }
+          if ($LASTEXITCODE -ne 0) { Write-Error "Deployment failed"; exit 1 }
 
-        # Remove key immediately after use
-        Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
+          Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
 
+      - name: Cleanup SSH artifacts
+        if: always()
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        run: |
+          Remove-Item -Force -ErrorAction SilentlyContinue `
+            "$env:GITHUB_WORKSPACE\deploy_key.pem"
+          Remove-Item -Force -ErrorAction SilentlyContinue `
+            "$env:RUNNER_TEMP\deploy_key.pem"
 
   smoke-test:
     needs: deploy-to-server
