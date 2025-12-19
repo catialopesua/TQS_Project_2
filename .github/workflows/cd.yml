@@ -176,7 +176,7 @@ jobs:
             }
           }
 
-  smoke-test:
+  smoke-test: 
     needs: deploy-to-server
     runs-on: [self-hosted]
     if: success()
