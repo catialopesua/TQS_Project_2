@@ -2,6 +2,12 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
+  ext: {
+    loadimpact: {
+      projectID: 6149459,
+      name: 'Smoke Test'
+    }
+  },
   vus: 10,
   duration: '1m',
   thresholds: {

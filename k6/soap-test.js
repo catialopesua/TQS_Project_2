@@ -2,6 +2,12 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 export const options = {
+  ext: {
+    loadimpact: {
+      projectID: 6149459,
+      name: 'Soap Test'
+    }
+  },
   vus: 50,
   duration: '2h',
   thresholds: {
