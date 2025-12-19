@@ -108,6 +108,6 @@ public class LoginControllerTest {
     void bookingsConfirmationPageTest() throws Exception {
         mockMvc.perform(get("/bookings/confirmation"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("bookings/confirmation"));
+                .andExpect(view().name("paymentconfirmation"));
     }
 }
