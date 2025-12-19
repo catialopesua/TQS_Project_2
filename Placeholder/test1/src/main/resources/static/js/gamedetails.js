@@ -395,8 +395,13 @@ class GameDetails {
     calculateBookingPrice() {
         const start = this.elements.bookingStart.value;
         const end = this.elements.bookingEnd.value;
-
+        
         if (start && end) {
+            if (!this.isDateRangeAvailable(start, end)) {
+                const priceSummary = document.getElementById('booking-price-summary');
+                if (priceSummary) priceSummary.style.display = 'none';
+                return;
+            }
             const startDate = new Date(start);
             const endDate = new Date(end);
             const daysCount = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
@@ -410,6 +415,25 @@ class GameDetails {
     closeBookingModal() {
         if (!this.elements.bookingModal) return;
         this.elements.bookingModal.style.display = 'none';
+    }
+
+    isDateRangeAvailable(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return !this.bookings.some(booking => {
+            const bookingStart = new Date(booking.startDate);
+            const bookingEnd = new Date(booking.endDate);
+
+            bookingStart.setHours(0, 0, 0, 0);
+            bookingEnd.setHours(0, 0, 0, 0);
+
+            // Overlap check
+            return start <= bookingEnd && end >= bookingStart;
+        });
     }
 
     async submitBooking() {
@@ -427,6 +451,14 @@ class GameDetails {
             this.showBookingError('End date must be after start date.');
             return;
         }
+        // Check for overlapping bookings
+        if (!this.isDateRangeAvailable(start, end)) {
+            this.showBookingError(
+                'Some of the selected dates are already booked. Please choose different dates.'
+            );
+            return;
+        }
+
 
         // Get logged-in user
         const stored = localStorage.getItem('bitswap_demo_user');
