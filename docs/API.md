@@ -1,0 +1,42 @@
+# BitSwap API Documentation
+
+# API Endpoints
+
+- POST `/auth/login` — Authenticate user and create session.
+- POST `/games` — Create a game listing.
+- GET `/games` — List all games.
+- GET `/games/{id}` — Get game by ID.
+- GET `/games/owner/{ownerUsername}` — List games by owner.
+- PUT `/games/{id}` — Update a game (owner only).
+- DELETE `/games/{id}` — Delete a game (owner only).
+- POST `/users` — Create a user.
+- GET `/users` — List users.
+- GET `/users/{id}` — Get user by ID.
+- PUT `/users/{id}` — Update user profile.
+- DELETE `/users/{id}` — Delete a user.
+- POST `/bookings` — Create a booking (rental request).
+- POST `/bookings/create` — Create booking by username.
+- GET `/bookings` — List bookings.
+- GET `/bookings/{bookingId}` — Get booking by ID.
+- GET `/bookings/game/{gameId}` — List bookings for a game.
+- GET `/bookings/user/{userId}` — List bookings by user.
+- GET `/bookings/owner/{ownerUsername}` — List bookings for owner’s games.
+- PUT `/bookings/{bookingId}/status` — Update booking status (approve/decline).
+- POST `/payments/process` — Process payment and create booking.
+- GET `/payments` — List payments.
+- GET `/payments/{paymentId}` — Get payment by ID.
+- GET `/payments/transaction/{transactionId}` — Get payment by transaction ID.
+- POST `/payments/{paymentId}/refund` — Refund a payment.
+- POST `/upload-image` — Upload image (returns URL or base64 string).
+- Page routes
+  - GET `/`, `/login` — Login page.
+  - GET `/listings` — Listings page.
+  - GET `/addvideogame` — Add listing page.
+  - GET `/bookingrequests` — Booking requests page.
+  - GET `/mylistings` — My listings page.
+  - GET `/profile` — Profile page.
+  - GET `/gamedetails` — Game details page.
+  - GET `/admin` — Admin page.
+  - GET `/rent` — Rent page.
+  - GET `/purchasehistory` — Purchase history page.
+  - GET `/bookings/confirmation` — Confirmation page.
