@@ -28,19 +28,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install k6
-        run: |
-          curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6.gpg
-          echo "deb [signed-by=/usr/share/keyrings/k6.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt update
-          sudo apt install -y k6
-
       - name: Select test
         run: |
           if [ "${{ github.event.inputs.test_type }}" = "soak" ]; then
-            k6 cloud k6/soak-test.js
+            k6 run -o cloud k6/soak-test.js
           elif [ "${{ github.event.inputs.test_type }}" = "smoke" ]; then
-            k6 cloud k6/smoke-test.js
+            k6 run -o cloud k6/smoke-test.js
           else
-            k6 cloud k6/stress-test.js
+            k6 run -o cloud k6/stress-test.js
           fi

@@ -196,4 +196,4 @@ jobs:
           if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
              $env:Path += ";C:\Program Files\k6"
           }
-          k6 cloud k6/smoke-test.js
+          k6 run -o cloud k6/smoke-test.js
