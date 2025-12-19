@@ -1,19 +1,18 @@
 package test1.test1.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import test1.test1.model.Booking;
@@ -143,5 +142,45 @@ class PaymentServiceTest {
         assertThat(paymentService.getPaymentsByBooking(booking)).containsExactly(payment);
         assertThat(paymentService.getPaymentByTransactionId("tx")).contains(payment);
         assertThat(paymentService.getPaymentById(1)).contains(payment);
+    }
+
+    @Test
+    void processPayment_paypal_success_setsPaypalDetails() {
+        // Arrange
+        Booking booking = sampleBooking();
+        String paypalEmail = "test@paypal.com";
+        when(bookingRepository.findById(10)).thenReturn(Optional.of(booking));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act - Loop to ensure we hit the 95% success path for simulation
+        Payment result = null;
+        for (int i = 0; i < 50; i++) {
+            result = paymentService.processPayment(10, "paypal", 50.0, "USD", null, null, paypalEmail);
+            if ("COMPLETED".equals(result.getStatus())) break;
+        }
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getStatus()).isEqualTo("COMPLETED");
+        assertThat(result.getPaypalEmail()).isEqualTo(paypalEmail);
+        assertThat(result.getTransactionId()).startsWith("txn_paypal_");
+        assertThat(result.getCardLast4()).isNull(); // Ensure stripe details aren't set
+    }
+
+    @Test
+    void processPayment_unrecognizedMethod_returnsFailedStatus() {
+        // Arrange
+        Booking booking = sampleBooking();
+        when(bookingRepository.findById(10)).thenReturn(Optional.of(booking));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act - Using a method not handled in simulation (e.g., "bitcoin")
+        Payment result = paymentService.processPayment(10, "bitcoin", 100.0, "BTC", null, null, null);
+
+        // Assert
+        assertThat(result.getStatus()).isEqualTo("FAILED");
+        assertThat(result.getFailureReason()).contains("Payment processing failed");
+        // Verify default transaction ID prefix is paypal (based on current ternary logic)
+        assertThat(result.getTransactionId()).startsWith("txn_paypal_");
     }
 }

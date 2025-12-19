@@ -63,6 +63,13 @@ public class LoginControllerTest {
     }
 
     @Test
+    void myListingsPageTest() throws Exception {
+        mockMvc.perform(get("/mylistings"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("mylistings"));
+    }
+
+    @Test
     void profilePageTest() throws Exception {
         mockMvc.perform(get("/profile"))
                 .andExpect(status().isOk())
@@ -77,9 +84,30 @@ public class LoginControllerTest {
     }
 
     @Test
+    void adminPageTest() throws Exception {
+        mockMvc.perform(get("/admin"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin"));
+    }
+
+    @Test
     void rentPageTest() throws Exception {
         mockMvc.perform(get("/rent"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("rent"));
+    }
+
+    @Test
+    void purchaseHistoryPageTest() throws Exception {
+        mockMvc.perform(get("/purchasehistory"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchasehistory"));
+    }
+
+    @Test
+    void bookingsConfirmationPageTest() throws Exception {
+        mockMvc.perform(get("/bookings/confirmation"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("bookings/confirmation"));
     }
 }
