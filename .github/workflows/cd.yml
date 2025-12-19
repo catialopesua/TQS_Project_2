@@ -186,16 +186,26 @@ jobs:
         with:
           clean: true
 
-      - name: Install k6
+      - name: Ensure k6 is installed
         shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         run: |
+          # Force TLS 1.2 for the download
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          
           if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
-            Write-Host "k6 not found. Installing..."
-            $msiPath = "$env:TEMP\k6-installer.msi"
-            Invoke-WebRequest -Uri "https://github.com/grafana/k6/releases/download/v0.51.0/k6-v0.51.0-amd64.msi" -OutFile $msiPath
-            Start-Process msiexec.exe -ArgumentList "/i $msiPath /quiet /norestart" -Wait
-            # Refresh path for this session
-            $env:Path += ";C:\Program Files\k6" 
+            Write-Host "k6 not found. Downloading MSI..."
+            $msiPath = Join-Path $env:TEMP "k6-v0.51.0-amd64.msi"
+            
+            # Use -UseBasicParsing to avoid IE dependencies on servers
+            Invoke-WebRequest -Uri "https://github.com/grafana/k6/releases/download/v0.51.0/k6-v0.51.0-amd64.msi" -OutFile $msiPath -UseBasicParsing
+            
+            Write-Host "Installing MSI quietly..."
+            $process = Start-Process msiexec.exe -ArgumentList "/i `"$msiPath`" /quiet /norestart" -Wait -PassThru
+            if ($process.ExitCode -ne 0) { throw "MSI installation failed with exit code $($process.ExitCode)" }
+            
+            Write-Host "k6 installed successfully."
+          } else {
+            Write-Host "k6 is already present."
           }
 
       - name: Run smoke test
@@ -204,6 +214,8 @@ jobs:
           BASE_URL: http://${{ secrets.SERVER_HOST }}:${{ env.HOST_PORT }}
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: |
-          # Ensure the session knows where k6 is
-          $env:Path += ";C:\Program Files\k6"
+          # Dynamically find k6 path if it's not in the environment yet
+          if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
+             $env:Path += ";C:\Program Files\k6;C:\Program Files (x86)\k6"
+          }
           k6 cloud k6/smoke-test.js
