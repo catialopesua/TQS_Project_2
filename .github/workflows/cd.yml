@@ -5,6 +5,7 @@ on:
     workflows: ["CI Pipeline"]
     types:
       - completed
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -125,36 +126,74 @@ jobs:
           APP_PORT: ${{ env.APP_PORT }}
           HOST_PORT: ${{ env.HOST_PORT }}
         run: |
-          $keyPath = Join-Path $env:RUNNER_TEMP 'deploy_key.pem'
-
-          # Write SSH key
-          $raw = $env:SERVER_SSH_KEY.Trim()
-          if ($raw.StartsWith('"') -and $raw.EndsWith('"')) { $raw = $raw.Trim('"') }
-
+          # Use System Temp to avoid workspace permission conflicts
+          $keyPath = Join-Path $env:TEMP "deploy_key_$($env:GITHUB_RUN_ID).pem"
+          
           try {
-            $bytes = [Convert]::FromBase64String($raw)
-            [IO.File]::WriteAllBytes($keyPath, $bytes)
-          } catch {
-            $normalized = $raw -replace "`r`n","`n"
-            [IO.File]::WriteAllText($keyPath, $normalized, [Text.Encoding]::ASCII)
+            # 1. Write SSH key
+            $raw = $env:SERVER_SSH_KEY.Trim()
+            if ($raw.StartsWith('"') -and $raw.EndsWith('"')) { $raw = $raw.Trim('"') }
+
+            try {
+              $bytes = [Convert]::FromBase64String($raw)
+              [IO.File]::WriteAllBytes($keyPath, $bytes)
+            } catch {
+              $normalized = $raw -replace "`r`n","`n"
+              [IO.File]::WriteAllText($keyPath, $normalized, [Text.Encoding]::ASCII)
+            }
+
+            # 2. Set strict permissions (Required for SSH on Windows)
+            icacls $keyPath /inheritance:r /grant:r "$($env:USERNAME):R" | Out-Null
+
+            $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
+
+            # 3. SSH connectivity test
+            ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok"
+            if ($LASTEXITCODE -ne 0) { throw "SSH connectivity test failed" }
+
+            # 4. Execute Remote Deploy
+            $deployScript = Join-Path $env:GITHUB_WORKSPACE 'scripts\deploy.sh'
+            if (-not (Test-Path $deployScript)) { throw "Deploy script not found at $deployScript" }
+
+            Get-Content $deployScript -Raw |
+              ssh -i $keyPath -o StrictHostKeyChecking=no `
+                  $target `
+                  "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT"
+
+            if ($LASTEXITCODE -ne 0) { throw "Remote deployment script failed" }
+
+          }
+          catch {
+            Write-Error $_.Exception.Message
+            exit 1
+          }
+          finally {
+            # 5. CRITICAL: Reset permissions and Cleanup
+            if (Test-Path $keyPath) {
+              icacls $keyPath /reset | Out-Null
+              Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
+              Write-Host "Cleaned up SSH key and reset permissions."
+            }
           }
 
-          icacls $keyPath /inheritance:r /grant:r "$(whoami):R" | Out-Null
+  smoke-test: 
+    needs: deploy-to-server
+    runs-on: [self-hosted]
+    if: success()
 
-          $target = "$($env:SERVER_USER)@$($env:SERVER_HOST)"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: true
 
-          # SSH connectivity test
-          ssh -i $keyPath -o BatchMode=yes -o StrictHostKeyChecking=no $target "echo ok"
-          if ($LASTEXITCODE -ne 0) { Write-Error "SSH test failed"; exit 1 }
-
-          # Pipe deploy.sh (committed in repo) to remote bash
-          $deployScript = Join-Path $env:GITHUB_WORKSPACE 'scripts\deploy.sh'
-          Get-Content $deployScript -Raw |
-            ssh -i $keyPath -o StrictHostKeyChecking=no `
-                $target `
-                "bash -s -- $env:REGISTRY $env:IMAGE_NAME $env:CONTAINER_NAME $env:APP_PORT $env:HOST_PORT"
-
-          if ($LASTEXITCODE -ne 0) { Write-Error "Deployment failed"; exit 1 }
-
-          Remove-Item -Force $keyPath -ErrorAction SilentlyContinue
-
+      - name: Run smoke test
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        env:
+          BASE_URL: http://${{ secrets.SERVER_HOST }}:${{ env.HOST_PORT }}
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: |
+          # Ensure the session can find k6 even if the system path hasn't refreshed
+          if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
+             $env:Path += ";C:\Program Files\k6"
+          }
+          k6 run -o cloud k6/smoke-test.js

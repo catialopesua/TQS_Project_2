@@ -1,0 +1,56 @@
+name: Performance Tests (k6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Type of performance test"
+        required: true
+        default: "stress"
+        type: choice
+        options:
+          - smoke
+          - stress
+          - soak
+
+  schedule:
+    - cron: "0 2 * * *"  # nightly at 02:00
+
+env:
+  BASE_URL: http://${{ secrets.SERVER_HOST }}:80
+  K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+
+jobs:
+  k6-performance:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Select and run test
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
+        env:
+          BASE_URL: http://${{ secrets.SERVER_HOST }}:80
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: |
+          # Fix 2: Refresh path if k6 was just installed manually
+          if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
+             $env:Path += ";C:\Program Files\k6"
+          }
+
+          # Fix 3: Use PowerShell If/Else syntax
+          $testType = "${{ github.event.inputs.test_type }}"
+          
+          if ($testType -eq "soak") {
+            Write-Host "Running Soak Test..."
+            k6 run -o cloud k6/soak-test.js
+          }
+          elseif ($testType -eq "smoke") {
+            Write-Host "Running Smoke Test..."
+            k6 run -o cloud k6/smoke-test.js
+          }
+          else {
+            Write-Host "Running Stress Test (Default)..."
+            k6 run -o cloud k6/stress-test.js
+          }
