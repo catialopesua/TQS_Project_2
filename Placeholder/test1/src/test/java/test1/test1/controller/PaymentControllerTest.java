@@ -171,4 +171,123 @@ public class PaymentControllerTest {
         request.put("card", Map.of("number", "4111222233334444"));
         return request;
     }
+
+    /**
+     * Tests for getPayment(Integer paymentId)
+     */
+    @Test
+    void testGetPayment_NotFound() {
+        when(paymentService.getPaymentById(999)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = controller.getPayment(999);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertEquals("Payment not found", body.get("message"));
+    }
+
+    @Test
+    void testGetPayment_Exception() {
+        when(paymentService.getPaymentById(anyInt())).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = controller.getPayment(1);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertTrue(body.get("message").toString().contains("Error retrieving payment"));
+    }
+
+    /**
+     * Tests for getPaymentByTransaction(String transactionId)
+     */
+    @Test
+    void testGetPaymentByTransaction_Success() {
+        Payment payment = new Payment();
+        payment.setTransactionId("txn_123");
+        when(paymentService.getPaymentByTransactionId("txn_123")).thenReturn(Optional.of(payment));
+
+        ResponseEntity<?> response = controller.getPaymentByTransaction("txn_123");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(payment, response.getBody());
+    }
+
+    @Test
+    void testGetPaymentByTransaction_NotFound() {
+        when(paymentService.getPaymentByTransactionId("invalid_txn")).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = controller.getPaymentByTransaction("invalid_txn");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    /**
+     * Tests for refundPayment(Integer paymentId, Map request)
+     */
+    @Test
+    void testRefundPayment_Success_DefaultReason() {
+        Payment payment = new Payment();
+        payment.setPaymentId(1);
+        payment.setStatus("REFUNDED");
+        
+        // Pass empty map to trigger the "User requested refund" default logic
+        when(paymentService.refundPayment(eq(1), eq("User requested refund"))).thenReturn(payment);
+
+        ResponseEntity<?> response = controller.refundPayment(1, new HashMap<>());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertEquals("Payment refunded successfully", body.get("message"));
+        assertTrue((Boolean) body.get("success"));
+    }
+
+    @Test
+    void testRefundPayment_IllegalArgumentException() {
+        when(paymentService.refundPayment(anyInt(), anyString()))
+            .thenThrow(new IllegalArgumentException("Payment doesn't exist"));
+
+        ResponseEntity<?> response = controller.refundPayment(1, Map.of("reason", "none"));
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertTrue(body.get("message").toString().contains("Invalid payment"));
+    }
+
+    @Test
+    void testRefundPayment_IllegalStateException() {
+        // Covers logic when payment isn't COMPLETED
+        when(paymentService.refundPayment(anyInt(), anyString()))
+            .thenThrow(new IllegalStateException("Cannot refund failed payment"));
+
+        ResponseEntity<?> response = controller.refundPayment(1, Map.of("reason", "none"));
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertEquals("Cannot refund failed payment", body.get("message"));
+    }
+
+    /**
+     * Tests for getAllPayments()
+     */
+    @Test
+    void testGetAllPayments_Success() {
+        java.util.List<Payment> payments = java.util.List.of(new Payment(), new Payment());
+        when(paymentService.getAllPayments()).thenReturn(payments);
+
+        ResponseEntity<?> response = controller.getAllPayments();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(payments, response.getBody());
+    }
+
+    @Test
+    void testGetAllPayments_Exception() {
+        when(paymentService.getAllPayments()).thenThrow(new RuntimeException("Empty table"));
+
+        ResponseEntity<?> response = controller.getAllPayments();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        Map<String, Object> body = (Map<String, Object>) response.getBody();
+        assertTrue(body.get("message").toString().contains("Error retrieving payments"));
+    }
 }
