@@ -187,15 +187,23 @@ jobs:
           clean: true
 
       - name: Install k6
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         run: |
-          curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6.gpg
-          echo "deb [signed-by=/usr/share/keyrings/k6.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt update
-          sudo apt install -y k6
+          if (!(Get-Command k6 -ErrorAction SilentlyContinue)) {
+            Write-Host "k6 not found. Installing..."
+            $msiPath = "$env:TEMP\k6-installer.msi"
+            Invoke-WebRequest -Uri "https://github.com/grafana/k6/releases/download/v0.51.0/k6-v0.51.0-amd64.msi" -OutFile $msiPath
+            Start-Process msiexec.exe -ArgumentList "/i $msiPath /quiet /norestart" -Wait
+            # Refresh path for this session
+            $env:Path += ";C:\Program Files\k6" 
+          }
 
       - name: Run smoke test
+        shell: powershell -NoProfile -ExecutionPolicy Bypass {0}
         env:
           BASE_URL: http://${{ secrets.SERVER_HOST }}:${{ env.HOST_PORT }}
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: |
+          # Ensure the session knows where k6 is
+          $env:Path += ";C:\Program Files\k6"
           k6 cloud k6/smoke-test.js
