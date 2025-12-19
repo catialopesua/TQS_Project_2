@@ -1,7 +1,6 @@
 package test1.tests.unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +49,7 @@ public class GameRequestTest {
         gameRequest.setStartDate("18-10-2026");
         gameRequest.setEndDate("12-12-2026");
         gameRequest.setOwnerUsername("Diogo123");
+        gameRequest.setDeliveryInstructions("leave it...");
 
         assertEquals(gameRequest.getTitle(), "Title2");
         assertEquals(gameRequest.getDescription(), "Desc2");
@@ -60,6 +60,7 @@ public class GameRequestTest {
         assertEquals(gameRequest.getStartDate(), "18-10-2026");
         assertEquals(gameRequest.getEndDate(),"12-12-2026");
         assertEquals(gameRequest.getOwnerUsername(), "Diogo123");
+        assertEquals(gameRequest.getDeliveryInstructions(), "leave it...");
     }
 
 }

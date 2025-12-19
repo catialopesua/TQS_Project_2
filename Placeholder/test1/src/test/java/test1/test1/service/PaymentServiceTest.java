@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -182,5 +184,80 @@ class PaymentServiceTest {
         assertThat(result.getFailureReason()).contains("Payment processing failed");
         // Verify default transaction ID prefix is paypal (based on current ternary logic)
         assertThat(result.getTransactionId()).startsWith("txn_paypal_");
+    }
+
+    @Test
+    void processPayment_nullValues_stillCreatesRecord() {
+        // Arrange
+        Booking booking = sampleBooking();
+        when(bookingRepository.findById(10)).thenReturn(Optional.of(booking));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act - Testing with minimal data
+        Payment result = paymentService.processPayment(10, "stripe", 0.0, null, null, null, null);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getAmount()).isEqualTo(0.0);
+        assertThat(result.getCurrency()).isNull();
+    }
+
+    @Test
+    void processPayment_verifyStripeDetailsNotLeakedToPaypal() {
+        // Arrange
+        Booking booking = sampleBooking();
+        when(bookingRepository.findById(10)).thenReturn(Optional.of(booking));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act - Sending Stripe details to a PayPal payment
+        Payment result = paymentService.processPayment(10, "paypal", 50.0, "USD", "4242", "Visa", "user@test.com");
+
+        // Assert
+        assertThat(result.getPaypalEmail()).isEqualTo("user@test.com");
+        assertThat(result.getCardLast4()).isNull(); // Crucial: Verify logic branches don't cross
+        assertThat(result.getCardBrand()).isNull();
+    }
+
+    @Test
+    void refundPayment_preservesExistingData() {
+        // Arrange
+        Booking booking = sampleBooking();
+        Payment existingPayment = new Payment(booking, "stripe", 100.0, "USD");
+        existingPayment.setPaymentId(99);
+        existingPayment.setStatus("COMPLETED");
+        existingPayment.setTransactionId("txn_123");
+        
+        when(paymentRepository.findById(99)).thenReturn(Optional.of(existingPayment));
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        Payment refunded = paymentService.refundPayment(99, "Customer requested refund");
+
+        // Assert
+        assertThat(refunded.getStatus()).isEqualTo("REFUNDED");
+        assertThat(refunded.getTransactionId()).isEqualTo("txn_123"); // ID should not change
+        assertThat(refunded.getAmount()).isEqualTo(100.0); // Amount should remain same
+        assertThat(refunded.getFailureReason()).isEqualTo("Customer requested refund");
+    }
+
+    @Test
+    void getAllPayments_callsRepositoryFindAll() {
+        // Act
+        paymentService.getAllPayments();
+        
+        // Assert
+        verify(paymentRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getPaymentsByBooking_callsRepositoryWithCorrectObject() {
+        // Arrange
+        Booking booking = sampleBooking();
+        
+        // Act
+        paymentService.getPaymentsByBooking(booking);
+        
+        // Assert
+        verify(paymentRepository).findByBooking(booking);
     }
 }

@@ -1,13 +1,12 @@
 package test1.tests.unittests;
-import test1.test1.model.Game;
-import test1.test1.model.User;
-import test1.test1.model.Booking;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+
+import test1.test1.model.Booking;
+import test1.test1.model.Game;
+import test1.test1.model.User;
 
 public class BookingTest {
 
@@ -37,10 +36,14 @@ public class BookingTest {
         booking.setUser(new User("José"));
         booking.setStartDate(LocalDate.of(2026, 1, 1));
         booking.setEndDate(LocalDate.of(2027, 1, 1));
+        booking.setTotalPrice(5.0);
+        booking.setStatus("APPROVED");
         assertEquals(booking.getGame().getTitle(), "Bloodborne");
         assertEquals(booking.getUser().getUsername(),"José");
         assertEquals(booking.getStartDate(), LocalDate.of(2026, 1, 1));
         assertEquals(booking.getEndDate(), LocalDate.of(2027, 1, 1));
+        assertEquals(booking.getTotalPrice(), 5.0);
+        assertEquals(booking.getStatus(), "APPROVED");
         
     }
 
